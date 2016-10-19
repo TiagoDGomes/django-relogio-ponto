@@ -14,8 +14,9 @@ class TestPaginaInicialSemAutenticar(TestCase):
     
     def test_formulario(self):
         self.assertContains(self.response, text='<form')
-        self.assertContains(self.response, text='<input ', count=3)
+        self.assertContains(self.response, text='<input ', count=4)
         self.assertContains(self.response, text='method="post"')
+        self.assertContains(self.response, text='csrfmiddlewaretoken')
         
         
 
