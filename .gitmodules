@@ -1,0 +1,3 @@
+[submodule "core/pyRelogioPonto"]
+	path = core/pyRelogioPonto
+	url = https://github.com/TiagoDGomes/pyRelogioPonto.git
