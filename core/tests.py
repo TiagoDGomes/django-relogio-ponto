@@ -1,13 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.urls.base import resolve, reverse
-from pprint import pprint
+from django.urls.base import  reverse
+from django.contrib import auth
 
 class TestCaseParaUsuarioLogado(TestCase):   
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='1234qwer')
-        self.logged_in = self.client.login(username=self.user.username, password='1234qwer')
-        self.response = self.client.get('/', follow=True)
+        self.logged_in = self.client.login(username='testuser', password='1234qwer')
+        self.response = self.client.get('/')
         
          
 class TestPaginaInicialSemAutenticar(TestCase):
@@ -15,50 +15,30 @@ class TestPaginaInicialSemAutenticar(TestCase):
     def setUp(self):
         self.response = self.client.get('/') 
 
-    def test_200(self):
-        self.assertEqual(200, self.response.status_code)
-    
-    def test_template(self):
-        self.assertTemplateUsed(self.response, 'login.html')
-    
-    def test_formulario(self):
-        self.assertContains(self.response, text='<form')
-        self.assertContains(self.response, text='<input ', count=4)
-        self.assertContains(self.response, text='method="post"')
-        self.assertContains(self.response, text='csrfmiddlewaretoken')
-        
-        
-
-class TestPaginaInicialComAutenticacao(TestCaseParaUsuarioLogado):  
-        
-    def test_valid(self):
-        self.assertTrue(self.logged_in) 
-               
-    def test_template(self):
-        self.assertTemplateUsed(self.response, 'index.html')
-        
-        
-        
-class TestPostAutenticacao(TestCase):
-
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='1234qwer')
-        self.response = self.client.post('/', {'username': 'testuser', 'password': '1234qwer'})    
-               
-    def test_template(self):
-        self.assertTemplateUsed(self.response, 'index.html')
-        
+    def test_302(self):
+        self.assertEqual(302, self.response.status_code)        
         
         
 class TestPaginaPrincipal(TestCaseParaUsuarioLogado):
     
-    def test_formulario(self):        
-        self.assertContains(self.response, text='csrfmiddlewaretoken')
-        self.assertContains(self.response, text='<button', count=5)    
+    def test_formulario(self):   
+        self.assertContains(self.response, text='csrfmiddlewaretoken')  
         self.assertContains(self.response, text='<input', count=5)
-        self.assertContains(self.response, text='type="submit"', )
+        self.assertContains(self.response, text='type="submit"', )        
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
+        self.assertContains(self.response, text=reverse('site_logout'), )
+    
+    def test_tabela_funcionarios(self):
+        self.assertContains(self.response, 'id="tabela_funcionarios"')
         
+class TestLogout(TestCaseParaUsuarioLogado):
+    
+    def test_logout(self):
+        self.response = self.client.get(reverse('site_logout'))   
+        self.assertEqual(302, self.response.status_code)
+        self.assertRedirects(self.response, '%s?next=/' % reverse('admin:login'))
+        user = auth.get_user(self.client)   
+        self.assertFalse(user.is_authenticated())   
         
 class TestGerarArquivo(TestCaseParaUsuarioLogado):
     

@@ -1,22 +1,23 @@
 from django.shortcuts import render
-from core.forms import LoginForm, GerarArquivoForm
-from django.contrib.auth import authenticate
-from django.http.response import HttpResponse, HttpResponseForbidden
+from core.forms import GerarArquivoForm
+from django.contrib.auth import logout
+from django.http.response import HttpResponse, HttpResponseForbidden,\
+    HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.urls.base import reverse
 
-def index(request):
-    if not request.POST:
-        form = LoginForm() 
-    else:
-        username = request.POST['username']
-        password = request.POST['password']
-        request.user = authenticate(username=username, password=password)
-    
-    form_gerar_arquivo = GerarArquivoForm()    
-    template = 'index.html' if not request.user.is_anonymous() else 'login.html'
-    
-    return render(request, template, locals())
+@login_required
+def index(request): 
+    form_gerar_arquivo = GerarArquivoForm() 
+    return render(request, 'index.html', locals())
 
-    
+
+def site_logout(request):
+    logout(request)
+    return HttpResponseRedirect('%s?next=/' % reverse('admin:login'))
+
+
+@login_required    
 def gerar_arquivo(request):
     form = GerarArquivoForm(request.POST)
     if form.is_valid():
@@ -25,3 +26,4 @@ def gerar_arquivo(request):
     else:
         response = HttpResponseForbidden()
     return response
+

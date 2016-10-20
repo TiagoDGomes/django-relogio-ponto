@@ -97,7 +97,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-
+LOGIN_URL = '/admin/login/'
 
 
 

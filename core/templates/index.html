@@ -4,86 +4,144 @@
 <head>
 <title>Index</title>
 <!-- Última versão CSS compilada e minificada -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
 
 <!-- Tema opcional -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+	crossorigin="anonymous">
 
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker3.min.css' %}">
+<link rel="stylesheet" type="text/css"
+	href="{% static 'css/main.css' %}">
+<link rel="stylesheet" type="text/css"
+	href="{% static 'css/bootstrap-datepicker3.min.css' %}">
 </head>
 <body>
 	<div class="main">
 
 
 		<div class="panel panel-default form-principal">
-			<div class="panel-body">
-				<form method="post" action="{% url 'gerar_arquivo' %}">
-		    		{% csrf_token %}	
-					<div class="row">
-						<div class="col-sm-6">
-							<div class="input-daterange input-group" id="datepicker">
-								<span class="input-group-addon">Período: </span>
-								<span class="input-gerar-arquivo">{{ form_gerar_arquivo.inicio }}</span>
-								<span class="input-group-addon">até</span>
-								<span class="input-gerar-arquivo">{{ form_gerar_arquivo.fim }}</span>
+			<ul class="nav nav-pills" role="tablist">
+				<li role="presentation" class="active"><a data-toggle="tab"
+					href="#gerar">Gerar</a></li>
+				<li role="presentation"><a data-toggle="tab"
+					href="#colaboradores">Colaboradores</a></li>
+				<li role="presentation"><a data-toggle="tab"
+					href="#registros_dia">Registros por dia</a></li>
+				<li role="presentation"><a data-toggle="tab"
+					href="#registros_funcionarios">Registros por funcionários</a></li>
+				<li role="presentation"><a data-toggle="tab"
+					href="#relogios">Relógios</a></li>
+				<li role="presentation"><a href="{% url 'site_logout' %}">Sair</a></li>
+
+			</ul>
+			<div class="tab-content panel-body">
+				<div id="gerar" class="tab-pane fade in active">
+					<h3>Gerar registros</h3>
+					<form method="post" action="{% url 'gerar_arquivo' %}">
+						{% csrf_token %}
+						<div class="row panel">
+							<div class="col-sm-6">
+								<div class="input-daterange input-group" id="datepicker">
+									<span class="input-group-addon">Período: </span> <span
+										class="input-gerar-arquivo">
+										{{form_gerar_arquivo.inicio }}</span> <span class="input-group-addon">até</span>
+									<span class="input-gerar-arquivo">
+									 {{form_gerar_arquivo.fim }}</span>
+								</div>
+							</div>
+							<div class="col-sm-4">&nbsp;</div>
+							<div class="col-sm-2">
+								<input type="submit" value="Gerar" class="btn btn-success">
+							</div>
+
+						</div>
+
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="checkbox">
+									<label> <input type="checkbox"
+										value="marcar_como_exportados">Marcar registros como
+										exportados
+									</label>
+								</div>
 							</div>
 						</div>
-						<div class="col-sm-4">&nbsp;</div>
-						<div class="col-sm-2">
-							<input type="submit" value="Gerar" class="btn btn-success">
-						</div>
-
-					</div>
-
+					</form>
 					<div class="row">
-						<div class="col-sm-6">
-							<div class="checkbox">
-								<label>
-									<input type="checkbox" value="marcar_como_exportados">Marcar registros como exportados
-								</label>
-							</div>
+						<div class="col-sm-12">
+							<button class="btn btn-link btn-xs">Desfazer marcar
+								exportados</button>
 						</div>
 					</div>
-				</form>
-				<div class="row">
-					<div class="col-sm-12">
-						<button class="btn btn-link btn-xs">Desfazer marcar exportados</button>
-					</div>
-				</div>
 
-
-			</div>
-		</div>
-
-		<div class="panel panel-default form-principal">
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-sm-3">
-						<button class="btn btn-default">Funcionários</button>
-					</div>
-					<div class="col-sm-3">
-						<button class="btn btn-default">Registros do dia</button>
-					</div>
-					<div class="col-sm-4">
-						<button class="btn btn-default">Registros por funcionários</button>
-					</div>
-					<div class="col-sm-2">
-						<button class="btn btn-danger">Sair</button>
-					</div>
 
 				</div>
+				<!-- fim #gerar -->
+
+				<div id="colaboradores" class="tab-pane fade">
+					<h3>Colaboradores</h3>
+					<table class="table" id="tabela_funcionarios">
+						<thead>
+					      <tr>
+					        <th></th>
+					        <th>Nome</th>
+					        <th>PIS</th>
+					        <th>Matrículas</th>
+					        <th>Relógios</th>
+					        
+					      </tr>
+					    </thead>
+					    <tbody>
+					      <tr>
+					      <td><input type="checkbox"></td>
+					        <td>					        
+					        Tiago Donizetti Gomes
+					        </td>
+					        <td>00000000</td>
+					        <td>- 0000</td>
+					        <td>Relógio 1</td>
+					        
+					      </tr>
+					      
+					    </tbody>
+					</table>
+				</div>
+				<div id="registros_dia" class="tab-pane fade">
+					<h3>Registros por dia</h3>
+					<p>Sed ut perspiciatis unde omnis iste natus error sit
+						voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+				</div>
+				<div id="registros_funcionarios" class="tab-pane fade">
+					<h3>Registros por funcionários</h3>
+					<p>Eaque ipsa quae ab illo inventore veritatis et quasi
+						architecto beatae vitae dicta sunt explicabo.</p>
+				</div>
+				<div id="relogios" class="tab-pane fade">
+					<h3>Relógios</h3>
+					<p>Ut enim ad minim veniam, quis nostrud exercitation ullamco
+						laboris nisi ut aliquip ex ea commodo consequat.</p>
+				</div>
+				
 			</div>
+
 		</div>
+
+
 	</div>
 	<!-- jQuery (obrigatório para plugins JavaScript do Bootstrap) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Última versão JavaScript compilada e minificada -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+		crossorigin="anonymous"></script>
 	<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 	<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
 	<script>
@@ -95,7 +153,7 @@
 			autoclose : true,
 			todayHighlight : true
 		});
-		$('span.input-gerar-arquivo input').each(function(t){
+		$('span.input-gerar-arquivo input').each(function(t) {
 			$(this).addClass('input-sm form-control')
 		});
 	</script>

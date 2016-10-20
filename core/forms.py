@@ -11,6 +11,5 @@ class GerarArquivoForm(forms.Form):
     
     @property
     def nome_arquivo(self):
-        print (self.cleaned_data)
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
         
