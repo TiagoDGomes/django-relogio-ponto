@@ -1,0 +1,13 @@
+.main {
+  position: absolute;
+  width: 800px;
+  height: 600px;
+  z-index: 15;
+  top: 50%;
+  left: 50%;
+  margin: -300px 0 0 -400px;
+}
+.main .form-principal .row {
+	margin-bottom: 1em;
+
+}

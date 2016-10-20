@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from core.forms import LoginForm
 from django.contrib.auth import authenticate
+from django.http.response import HttpResponse
 
 def index(request):
     if not request.POST:
@@ -15,3 +16,5 @@ def index(request):
     return render(request, template, locals())
 
     
+def gerar_arquivo(request):
+    return HttpResponse('')

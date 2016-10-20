@@ -1,5 +1,100 @@
+<!DOCTYPE html>
+{% load static %}
 <html>
-	<head>
-		<title>Index</title>
-	</head>
+<head>
+<title>Index</title>
+<!-- Última versão CSS compilada e minificada -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Tema opcional -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker3.min.css' %}">
+</head>
+<body>
+	<div class="main">
+
+
+		<div class="panel panel-default form-principal">
+			<div class="panel-body">
+				<form method="post" action="/p/">
+		    		{% csrf_token %}	
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="input-daterange input-group" id="datepicker">
+								<span class="input-group-addon">Período: </span>
+								<input type="text" class="input-sm form-control" name="start" />
+								<span class="input-group-addon">até</span>
+								<input type="text" class="input-sm form-control" name="end" />
+							</div>
+						</div>
+						<div class="col-sm-4">&nbsp;</div>
+						<div class="col-sm-2">
+							<input type="submit" value="Gerar" class="btn btn-success">
+						</div>
+
+					</div>
+
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" value="marcar_como_exportados">Marcar registros como exportados
+								</label>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div class="row">
+					<div class="col-sm-12">
+						<button class="btn btn-link btn-xs">Desfazer marcar exportados</button>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+
+		<div class="panel panel-default form-principal">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-sm-3">
+						<button class="btn btn-default">Funcionários</button>
+					</div>
+					<div class="col-sm-3">
+						<button class="btn btn-default">Registros do dia</button>
+					</div>
+					<div class="col-sm-4">
+						<button class="btn btn-default">Registros por funcionários</button>
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-danger">Sair</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- jQuery (obrigatório para plugins JavaScript do Bootstrap) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Última versão JavaScript compilada e minificada -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+	<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+	<script>
+		$('.input-daterange').datepicker({
+			format : "dd/mm/yyyy",
+			language : "pt-BR",
+			daysOfWeekHighlighted : "1,2,3,4,5",
+			calendarWeeks : true,
+			autoclose : true,
+			todayHighlight : true
+		});
+	</script>
+</body>
 </html>

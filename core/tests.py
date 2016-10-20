@@ -1,6 +1,14 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls.base import resolve, reverse
 
+class TestCaseParaUsuarioLogado(TestCase):   
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='1234qwer')
+        self.logged_in = self.client.login(username=self.user.username, password='1234qwer')
+        self.response = self.client.get('/', follow=True)
+        
+         
 class TestPaginaInicialSemAutenticar(TestCase):
 
     def setUp(self):
@@ -20,12 +28,7 @@ class TestPaginaInicialSemAutenticar(TestCase):
         
         
 
-class TestPaginaInicialComAutenticacao(TestCase):
-
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='1234qwer')
-        self.logged_in = self.client.login(username=self.user.username, password='1234qwer')
-        self.response = self.client.get('/', follow=True)    
+class TestPaginaInicialComAutenticacao(TestCaseParaUsuarioLogado):  
         
     def test_valid(self):
         self.assertTrue(self.logged_in) 
@@ -35,7 +38,7 @@ class TestPaginaInicialComAutenticacao(TestCase):
         
         
         
-class TestPaginaInicialAutenticando(TestCase):
+class TestPostAutenticacao(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='1234qwer')
@@ -43,6 +46,27 @@ class TestPaginaInicialAutenticando(TestCase):
                
     def test_template(self):
         self.assertTemplateUsed(self.response, 'index.html')
+        
+        
+        
+class TestPaginaPrincipal(TestCaseParaUsuarioLogado):
+    
+    def test_formulario(self):        
+        self.assertContains(self.response, text='csrfmiddlewaretoken')
+        self.assertContains(self.response, text='<button', count=5)    
+        self.assertContains(self.response, text='<input', count=5)
+        self.assertContains(self.response, text='type="submit"', )
+        
+class TestGerarArquivo(TestCaseParaUsuarioLogado):
+    
+    def setUp(self):
+        super(TestGerarArquivo, self).setUp()
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
+         
+    def test_ok(self):
+        self.assertEqual(200, self.response.status_code)    
+    
+     
         
              
         
