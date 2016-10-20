@@ -21,15 +21,15 @@
 
 		<div class="panel panel-default form-principal">
 			<div class="panel-body">
-				<form method="post" action="/p/">
+				<form method="post" action="{% url 'gerar_arquivo' %}">
 		    		{% csrf_token %}	
 					<div class="row">
 						<div class="col-sm-6">
 							<div class="input-daterange input-group" id="datepicker">
 								<span class="input-group-addon">Período: </span>
-								<input type="text" class="input-sm form-control" name="start" />
+								<span class="input-gerar-arquivo">{{ form_gerar_arquivo.inicio }}</span>
 								<span class="input-group-addon">até</span>
-								<input type="text" class="input-sm form-control" name="end" />
+								<span class="input-gerar-arquivo">{{ form_gerar_arquivo.fim }}</span>
 							</div>
 						</div>
 						<div class="col-sm-4">&nbsp;</div>
@@ -94,6 +94,9 @@
 			calendarWeeks : true,
 			autoclose : true,
 			todayHighlight : true
+		});
+		$('span.input-gerar-arquivo input').each(function(t){
+			$(this).addClass('input-sm form-control')
 		});
 	</script>
 </body>

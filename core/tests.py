@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls.base import resolve, reverse
+from pprint import pprint
 
 class TestCaseParaUsuarioLogado(TestCase):   
     def setUp(self):
@@ -56,6 +57,8 @@ class TestPaginaPrincipal(TestCaseParaUsuarioLogado):
         self.assertContains(self.response, text='<button', count=5)    
         self.assertContains(self.response, text='<input', count=5)
         self.assertContains(self.response, text='type="submit"', )
+        self.assertContains(self.response, text=reverse('gerar_arquivo'), )
+        
         
 class TestGerarArquivo(TestCaseParaUsuarioLogado):
     
@@ -64,9 +67,10 @@ class TestGerarArquivo(TestCaseParaUsuarioLogado):
         self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
          
     def test_ok(self):
-        self.assertEqual(200, self.response.status_code)    
-    
-     
+        self.assertEqual(200, self.response.status_code)   
+        self.assertTrue('Content-Disposition' in self.response) 
+        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        
         
              
         
