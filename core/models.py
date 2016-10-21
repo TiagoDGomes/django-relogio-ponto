@@ -55,7 +55,7 @@ class Parametro(models.Model):
     propriedade = models.CharField(max_length=25, editable=False)
     valor = models.CharField(max_length=100)
     tipo = models.CharField(max_length=25, default='str', editable=False)
-    relogio = models.ForeignKey(RelogioPonto,verbose_name='relógio')
+    relogio = models.ForeignKey(RelogioPonto,verbose_name='relógio', related_name='parametros')
     
     def __str__(self):
         return self.propriedade
