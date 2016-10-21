@@ -3,13 +3,27 @@ from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
 
-class TestCaseParaUsuarioLogado(TestCase):   
+
+
+class TestCaseParaCriarUsuarioLogado(TestCase):   
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='1234qwer')
         self.logged_in = self.client.login(username='testuser', password='1234qwer')
+
+class TestCaseParaCriarUsuarioAdminLogado(TestCaseParaCriarUsuarioLogado):
+    def setUp(self):
+        TestCaseParaCriarUsuarioLogado.setUp(self)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+    
+
+class TestCaseParaUsuarioLogado(TestCaseParaCriarUsuarioLogado):   
+    def setUp(self):        
+        super(TestCaseParaUsuarioLogado, self).setUp()
         self.response = self.client.get('/')
         
-         
+        
 class TestPaginaInicialSemAutenticar(TestCase):
 
     def setUp(self):
@@ -51,6 +65,14 @@ class TestGerarArquivo(TestCaseParaUsuarioLogado):
         self.assertTrue('Content-Disposition' in self.response) 
         self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
         
+class TestRelogioAddAdmin(TestCaseParaCriarUsuarioAdminLogado):
+    
+    def setUp(self):
+        super(TestRelogioAddAdmin, self).setUp()
+        self.response = self.client.get(reverse('admin:core_relogioponto_add'))
+    
+    def test_remove_save_button(self):
+        self.assertNotContains(self.response, text='name="_save"')  
         
              
         

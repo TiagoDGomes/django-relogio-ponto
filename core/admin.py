@@ -16,13 +16,10 @@ class RelogioPontoAdmin(admin.ModelAdmin):
         else:
             return []
         
-    def change_view(self, request, object_id, form_url='', extra_context=None):
+    def add_view(self, request,  form_url='', extra_context=None):
         extra_context = extra_context or {}
-        if not object_id:
-            extra_context['show_save'] = False
-        
-        return super(RelogioPontoAdmin, self).change_view(request, object_id,
-            form_url, extra_context=extra_context)
+        extra_context['show_save'] = False             
+        return super(RelogioPontoAdmin, self).add_view(request, form_url, extra_context=extra_context)
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
