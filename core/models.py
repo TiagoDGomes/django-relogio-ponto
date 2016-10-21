@@ -6,15 +6,17 @@ from pyRelogioPonto.relogioponto.base import get_rep_suportados
 
 class Colaborador(models.Model):
     nome = models.CharField(max_length=100)
-    pis = models.CharField(max_length=25, unique=True)
+    pis = models.CharField(max_length=25, unique=True, verbose_name='PIS')
     verificar_digital = models.NullBooleanField()
     
     class Meta:
-        verbose_name_plural = 'Colaboradores'
+        verbose_name_plural = 'colaboradores'
+           
 
 class Matricula(models.Model):
     colaborador = models.ForeignKey(Colaborador)
-    numero = models.IntegerField()   
+    numero = models.IntegerField(verbose_name='número')   
+    
     
 class RelogioPonto(models.Model):      
     
@@ -34,16 +36,16 @@ class RelogioPonto(models.Model):
             nao_salvo = True
         
         s = super(RelogioPonto, self).save(*args, **kwargs)
-        for id, nome, tipo, parametros in get_rep_suportados():
-            print(nome, tipo)
-            if self.tipo == id:
-                for propriedade, tipo_valor in parametros:
-                    print(propriedade)
-                    parametro = Parametro()
-                    parametro.propriedade =  propriedade
-                    parametro.tipo = tipo_valor
-                    parametro.relogio = self
-                    parametro.save()  
+        if nao_salvo:
+            for id, nome, tipo, parametros in get_rep_suportados():
+                print(nome, tipo)
+                if self.tipo == id:
+                    for propriedade, tipo_valor in parametros:
+                        parametro = Parametro()
+                        parametro.propriedade =  propriedade
+                        parametro.tipo = tipo_valor
+                        parametro.relogio = self
+                        parametro.save()  
         return s
             
        
@@ -52,10 +54,11 @@ class Parametro(models.Model):
     propriedade = models.CharField(max_length=25, editable=False)
     valor = models.CharField(max_length=100)
     tipo = models.CharField(max_length=25, default='str', editable=False)
-    relogio = models.ForeignKey(RelogioPonto)
+    relogio = models.ForeignKey(RelogioPonto,verbose_name='relógio')
     
     def __str__(self):
         return self.propriedade
 
-    
+    class Meta:
+        verbose_name = 'parâmetro'   
     
