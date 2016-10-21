@@ -32,7 +32,8 @@ class RelogioPonto(models.Model):
         return self.nome
     
     def save(self, *args, **kwargs):
-        if self.id:
+        nao_salvo = False
+        if not self.id:
             nao_salvo = True
         
         s = super(RelogioPonto, self).save(*args, **kwargs)
