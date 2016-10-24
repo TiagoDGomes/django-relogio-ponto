@@ -14,26 +14,30 @@
 		<tr>
 			<td>
 				<!-- < input type="checkbox"> -->
-			</td>			
+			</td>
 			<td>{{ colaborador.nome }}</td>
 			<td>{{ colaborador.pis }}</td>
-			<td>
-				{% for matricula in colaborador.matriculas.all %}
-					&bullet; {{ matricula.numero }}<br>
-				{% endfor %}
+			<td>{% for matricula in colaborador.matriculas.all %} &bullet; {{ matricula.numero }}<br> {% endfor %}
 			</td>
 			<td>Relógio 1</td>
 		</tr>
 		{% endfor %}
-		<tr style="border: 1px solid silver">
-			<td colspan="2">Importar usuários por arquivo CSV:</td>
-			<td colspan="3" style="text-align: right">				
-				<form action="" method="post" enctype="multipart/form-data">
-					{% csrf_token %}
-					<input type="file" class="btn">
-					<input type="submit" value="Enviar" class="btn btn-primary">
-				</form>
-			</td>
-		</tr>
+
 	</tbody>
 </table>
+<div class="panel">
+	<div class="panel-body">
+		<form action="" method="post" enctype="multipart/form-data">
+			<div class="row">
+				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
+				<div class="col-sm-6">
+					{% csrf_token %} <input type="file" class="btn">
+
+				</div>
+				<div class="col-sm-2">
+					<input type="submit" value="Importar" class="btn btn-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
