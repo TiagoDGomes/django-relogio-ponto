@@ -5,16 +5,19 @@ from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-
-@login_required
-def index(request): 
-    form_gerar_arquivo = GerarArquivoForm() 
-    return render(request, 'index.html', locals())
+from core.models import Colaborador
 
 
 def site_logout(request):
     logout(request)
     return HttpResponseRedirect('%s?next=/' % reverse('admin:login'))
+
+
+@login_required
+def index(request): 
+    form_gerar_arquivo = GerarArquivoForm() 
+    colaboradores = Colaborador.objects.all()
+    return render(request, 'index.html', locals())
 
 
 @login_required    

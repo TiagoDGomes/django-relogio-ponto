@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib import admin
-from core.models import RelogioPonto, Colaborador, Parametro
+from core.models import RelogioPonto, Colaborador, Parametro, Matricula
 
 class ParametroInline(admin.StackedInline):
     model = Parametro
@@ -25,7 +25,11 @@ class RelogioPontoAdmin(admin.ModelAdmin):
         extra_context['show_save'] = False             
         return super(RelogioPontoAdmin, self).add_view(request, form_url, extra_context=extra_context)
     
+
+class MatriculaInline(admin.StackedInline):
+    model = Matricula
+    extra = 1
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
-    pass
+    inlines = [MatriculaInline,]

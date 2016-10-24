@@ -12,10 +12,19 @@ class Colaborador(models.Model):
     class Meta:
         verbose_name_plural = 'colaboradores'
            
-
+    def __str__(self):
+        return "{0} ({1})".format(self.nome, self.pis)
+    
+    
+    
 class Matricula(models.Model):
-    colaborador = models.ForeignKey(Colaborador)
+    colaborador = models.ForeignKey(Colaborador, related_name='matriculas')
     numero = models.IntegerField(verbose_name='número')   
+    
+    def __str__(self):
+        return str(self.numero)
+    
+    
     
     
 class RelogioPonto(models.Model):      
@@ -50,6 +59,7 @@ class RelogioPonto(models.Model):
         return s
             
        
+
 
 class Parametro(models.Model):
     propriedade = models.CharField(max_length=25, editable=False)
