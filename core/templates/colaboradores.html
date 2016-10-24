@@ -1,4 +1,6 @@
-
+{% if not colaboradores %}
+<div class="alert alert-info">Nenhum colaborador registrado.</div>
+{% else %}
 <table class="table" id="tabela_funcionarios">
 	<thead>
 		<tr>
@@ -10,6 +12,7 @@
 		</tr>
 	</thead>
 	<tbody>
+		
 		{% for colaborador in colaboradores %}
 		<tr>
 			<td>
@@ -25,6 +28,8 @@
 
 	</tbody>
 </table>
+
+{% endif %}
 <div class="panel">
 	<div class="panel-body">
 		<form action="" method="post" enctype="multipart/form-data">

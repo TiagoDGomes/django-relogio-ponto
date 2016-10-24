@@ -43,11 +43,12 @@ class TestPaginaPrincipal(TestUseParaUsuarioLogado):
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
         self.assertContains(self.response, text=reverse('site_logout'), )
         self.assertContains(self.response, text='type="file"', )
-        
+    
+    def test_nenhum_colaborador_registrado(self):
+        self.assertContains(self.response, text='Nenhum colaborador registrado')
         
     
-    def test_tabela_funcionarios(self):
-        self.assertContains(self.response, 'id="tabela_funcionarios"')
+
         
 class TestLogout(TestUseParaUsuarioLogado):
     
@@ -126,5 +127,6 @@ class TestCaseColaboradores(TestUseColaboradores):
             print(matricula)         
             self.assertContains(self.response, text=matricula.numero)
            
-        
+    def test_tabela_funcionarios(self):
+        self.assertContains(self.response, 'id="tabela_funcionarios"')    
 
