@@ -4,7 +4,14 @@ from django.urls.base import  reverse
 from django.contrib import auth
 from core.models import Colaborador, Matricula
 
-TOTAL_INPUTS_FIXOS = 8
+TOTAL_SUBMITS = 3
+TOTAL_INPUT_TEXT_FIXOS = 2
+TOTAL_INPUT_FILE_FIXOS = 1
+TOTAL_INPUT_CHECKBOX = 1
+TOTAL_CSRFTOKEN = 3
+NUMERO_INPUTS_TABELACOLABORADOR = 3
+TOTAL_MANAGEMENTFORM = 1
+TOTAL_INPUTS_FIXOS = TOTAL_MANAGEMENTFORM*4 + TOTAL_SUBMITS + TOTAL_INPUT_TEXT_FIXOS +  TOTAL_INPUT_FILE_FIXOS +  TOTAL_INPUT_CHECKBOX +  TOTAL_CSRFTOKEN
 
 
 class TestUseParaCriarUsuarioLogado(TestCase):   
@@ -38,14 +45,13 @@ class TestPaginaInicialSemAutenticar(TestCase):
 class TestPaginaPrincipal(TestUseParaUsuarioLogado):
     
     def test_formulario(self):   
-        self.assertContains(self.response, text='csrfmiddlewaretoken')  
-        self.assertContains(self.response, text='type="submit"', count=2)        
+        self.assertContains(self.response, text='csrfmiddlewaretoken', count=TOTAL_CSRFTOKEN)  
+        self.assertContains(self.response, text='type="submit"', count=TOTAL_SUBMITS)        
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
         self.assertContains(self.response, text=reverse('site_logout'), )
         self.assertContains(self.response, text='type="file"', )
     
-    def test_nenhum_colaborador_registrado(self):
-        self.assertContains(self.response, text='Nenhum colaborador registrado')
+
         
     
 
@@ -87,16 +93,18 @@ class TestUseColaboradores(TestUseParaUsuarioLogado):
         colaborador.nome = 'Teste 1'
         colaborador.pis = '700.85016.25-0'
         colaborador.save()
+        self.matricula_antiga1 = '123456'
+        self.matricula_antiga2 = '789012'
         
         self.colaboradores.append(colaborador)    
         matricula = Matricula()
         matricula.colaborador = colaborador
-        matricula.numero = '111111112'
+        matricula.numero = self.matricula_antiga1
         matricula.save()
         
         matricula2 = Matricula()
         matricula2.colaborador = colaborador
-        matricula2.numero = '757575'
+        matricula2.numero = self.matricula_antiga2
         matricula2.save()
         
         self.matriculas = []
@@ -123,11 +131,41 @@ class TestCaseColaboradores(TestUseColaboradores):
             self.assertContains(self.response, text=colaborador.nome)
             
     def test_matriculas(self):    
-        for matricula in self.matriculas:       
-            print(matricula)         
+        for matricula in self.matriculas:  
             self.assertContains(self.response, text=matricula.numero)
            
     def test_tabela_funcionarios(self):
         self.assertContains(self.response, 'id="tabela_funcionarios"')
-        self.assertContains(self.response, text="<input ", count=len(self.colaboradores)*3 + TOTAL_INPUTS_FIXOS)    
+        numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
+        self.assertContains(self.response, text="<input ",  count=numero_inputs)    
 
+class TestCaseColaboradoresPost(TestUseColaboradores):
+    def setUp(self):
+        super(TestCaseColaboradoresPost, self).setUp()
+        self.pis_antigo = self.colaboradores[0].pis        
+        self.novo_nome = 'TesteSalvar'
+        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
+                                                           'form-TOTAL_FORMS': 2,
+                                                           'form-INITIAL_FORMS': 1,
+                                                           'form-MIN_NUM_FORMS': 0,
+                                                           'form-MAX_NUM_FORMS': 1000,
+                                                           'form-0-id': self.colaboradores[0].id, 
+                                                           'form-0-nome': self.novo_nome, 
+                                                           'form-0-pis': '4444', 
+                                                           'form-0-matriculas': '666222\n777333',
+                                                        }) 
+    def test_redirect(self):        
+        self.assertRedirects(self.response_post, expected_url=reverse('index'))
+        
+    def test_alteracoes(self):
+        colaborador_salvo = Colaborador.objects.get(pis='4444')
+        self.assertEqual(colaborador_salvo.nome, 'TesteSalvar', 'Nome nao foi salvo')
+        self.assertEquals(colaborador_salvo.matriculas.filter(numero=666222).count(), 1)
+        self.assertEquals(colaborador_salvo.matriculas.filter(numero=777333).count(), 1)
+        ret2 = self.client.get(reverse('index'))
+        self.assertNotContains(ret2, text=self.pis_antigo)
+        self.assertNotContains(ret2, text=self.matricula_antiga1)
+        self.assertNotContains(ret2, text=self.matricula_antiga2)
+        self.assertContains(ret2, text='666222', count=1)
+        self.assertContains(ret2, text='777333', count=1)
+        

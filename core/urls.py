@@ -12,8 +12,9 @@ admin.site.index_title = admin.site.index_title
 admin.site.site_title = admin.site.index_title 
 
 urlpatterns = [
-    url(r'^$', views.index ) ,  
+    url(r'^$', views.index, name='index' ) ,  
     url(r'^gerar_arquivo$', views.gerar_arquivo, name='gerar_arquivo' )  , 
+    url(r'^salvar_colaborador$', views.salvar_colaboradores, name='salvar_colaboradores' )  , 
     url(r'^syslogout$', views.site_logout, name='site_logout' )  , 
             
 ]

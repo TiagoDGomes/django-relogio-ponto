@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from core.forms import GerarArquivoForm
+from core.forms import GerarArquivoForm, ColaboradorForm, ColaboradorFormSet
 from django.contrib.auth import logout
 from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
 from core.models import Colaborador, Matricula
 from django.forms.formsets import formset_factory
+from django.forms.models import modelformset_factory
 
 
 def site_logout(request):
@@ -17,9 +18,7 @@ def site_logout(request):
 @login_required
 def index(request): 
     form_gerar_arquivo = GerarArquivoForm() 
-    colaboradores = Colaborador.objects.all()
-    colaboradores_mf = formset_factory(Colaborador,extra=0)()
-    print(colaboradores_mf)
+    form_colaboradores = ColaboradorFormSet()
     return render(request, 'index.html', locals())
 
 
@@ -32,4 +31,12 @@ def gerar_arquivo(request):
     else:
         response = HttpResponseForbidden()
     return response
+
+
+@login_required
+def salvar_colaboradores(request):
+    form_colaboradores = ColaboradorFormSet(request.POST)
+    if form_colaboradores.is_valid():
+        form_colaboradores.save()
+    return HttpResponseRedirect(reverse('index'))
 

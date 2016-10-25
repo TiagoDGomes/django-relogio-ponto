@@ -20,7 +20,7 @@ class Colaborador(models.Model):
 class Matricula(models.Model):
     colaborador = models.ForeignKey(Colaborador, related_name='matriculas')
     numero = models.IntegerField(verbose_name='número')   
-    
+               
     def __str__(self):
         return str(self.numero)
     
@@ -48,7 +48,6 @@ class RelogioPonto(models.Model):
         s = super(RelogioPonto, self).save(*args, **kwargs)
         if nao_salvo:
             for id, nome, tipo, parametros in get_rep_suportados():
-                print(nome, tipo)
                 if self.tipo == id:
                     for propriedade, tipo_valor in parametros:
                         parametro = Parametro()

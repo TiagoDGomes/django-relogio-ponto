@@ -1,47 +1,55 @@
-{% if not colaboradores %}
-<div class="alert alert-info">Nenhum colaborador registrado.</div>
-{% else %}
-{{ colaboradores_mf }}
-<table class="table colaboradores" id="tabela_funcionarios">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Nome</th>
-			<th>PIS</th>
-			<th>Matrículas</th>
-			<th>Relógios</th>
-		</tr>
-	</thead>
-	<tbody>
-		
-		{% for colaborador in colaboradores %}
-		<tr>
-			<td data-type="boolean">
-			</td>
-			<td>{{ colaborador.nome }}</td>
-			<td>{{ colaborador.pis }}</td>
-			<td>{% for matricula in colaborador.matriculas.all %}{{ matricula.numero }}<br>{% endfor %}
-			</td>
-			<td data-ignore>Relógio 1</td>
-		</tr>
-		{% endfor %}
-		
 
-	</tbody>
-</table>
-<script>
-$(document).ready(function(){
-	var jss = new JSimpleSpreadsheet('.colaboradores',{});
-});
-</script>
-{% endif %}
-<div class="panel">
+<form action="{% url 'salvar_colaboradores' %}" method="post">
+
+	{% csrf_token %} {{ form_colaboradores.management_form }}
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<table class="table colaboradores" id="tabela_funcionarios">
+				<thead>
+					<tr>
+						<th>Nome</th>
+						<th>PIS</th>
+						<th>Matrículas</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					{% for colaborador in form_colaboradores %}
+					
+					<tr class="{%if colaborador.id.value %}old-item{% else %}new-item{%endif%}">
+
+						<td>{{ colaborador.id }}{{ colaborador.nome }}</td>
+						<td>{{ colaborador.pis }}</td>
+						<td>{{ colaborador.matriculas }}</td>
+
+					</tr>
+					
+					{% endfor %}
+
+
+				</tbody>
+			</table>
+			<div class="btn-group barra-colaboradores">
+				<div class="btn-group">
+					<input class="btn btn-primary" type="submit" value="Salvar">
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</form>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h4>Importar</h4>
+	</div>
 	<div class="panel-body">
-		<form action="" method="post" enctype="multipart/form-data">
+		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
 			<div class="row">
 				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
 				<div class="col-sm-6">
-					{% csrf_token %} <input type="file" class="btn">
+					{% csrf_token %} <input name="arquivo_csv" type="file" class="btn">
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">

@@ -34,4 +34,16 @@
 			exportados</button>
 	</div>
 </div>
-
+<script>
+		$('.input-daterange').datepicker({
+			format : "dd/mm/yyyy",
+			language : "pt-BR",
+			daysOfWeekHighlighted : "1,2,3,4,5",
+			calendarWeeks : true,
+			autoclose : true,
+			todayHighlight : true
+		});
+		$('span.input-gerar-arquivo input').each(function(t) {
+			$(this).addClass('input-sm form-control')
+		});
+	</script>
