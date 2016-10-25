@@ -17,18 +17,18 @@
 </head>
 <body>
 	<div class="main">
+		
 		<div class="panel panel-default form-principal">
-			<div class="panel-heading">
 			
-			<ul class="nav nav-pills" role="tablist">
+			
+			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" class="active"><a data-toggle="tab" href="#gerar">Gerar</a></li>
 				<li role="presentation"><a data-toggle="tab" href="#colaboradores">Colaboradores</a></li>
-				<li role="presentation"><a data-toggle="tab" href="#registros_dia">Registros por dia</a></li>
+				<!-- <li role="presentation"><a data-toggle="tab" href="#registros_dia">Registros por dia</a></li>
 				<li role="presentation"><a data-toggle="tab" href="#registros_funcionarios">Registros por funcionários</a></li>
-				<li role="presentation"><a data-toggle="tab" href="#relogios">Relógios</a></li>
-				<li role="presentation"><a href="{% url 'site_logout' %}">Sair</a></li>
+				<li role="presentation"><a data-toggle="tab" href="#relogios">Relógios</a></li> -->
 			</ul>
-			</div>
+			
 			<div class="tab-content panel-body">
 				<div id="gerar" class="tab-pane fade in active">
 					<h3>Gerar registros</h3>
@@ -55,21 +55,10 @@
 
 		</div>
 
-
+		<div class="panel panel-default form-principal barra-rodape">
+			<a class="btn btn-default" href="{% url 'site_logout' %}">Sair</a>
+		</div>
 	</div>
-
-	<script>
-		$('.input-daterange').datepicker({
-			format : "dd/mm/yyyy",
-			language : "pt-BR",
-			daysOfWeekHighlighted : "1,2,3,4,5",
-			calendarWeeks : true,
-			autoclose : true,
-			todayHighlight : true
-		});
-		$('span.input-gerar-arquivo input').each(function(t) {
-			$(this).addClass('input-sm form-control')
-		});
-	</script>
+	
 </body>
 </html>

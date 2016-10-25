@@ -9,7 +9,15 @@
 .main .form-principal .row {
 	margin-bottom: 1em;
 }
-.table input, .table textarea{
-	border: 0;
+.table.colaboradores input, .table.colaboradores textarea{
 	width: 100%
+}
+.table .old-item input, .table .old-item textarea {
+	border: 0;	
+}
+.table.colaboradores textarea{
+	height: 2.5em;
+}
+.barra-rodape, .barra-colaboradores * {
+	text-align: right
 }
