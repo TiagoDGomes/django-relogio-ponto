@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
 from core.models import Colaborador, Matricula
+from settings import BASE_DIR
+import os
 
 TOTAL_SUBMITS = 3
 TOTAL_INPUT_TEXT_FIXOS = 2
@@ -138,6 +140,7 @@ class TestCaseColaboradores(TestUseColaboradores):
         self.assertContains(self.response, 'id="tabela_funcionarios"')
         numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
         self.assertContains(self.response, text="<input ",  count=numero_inputs)    
+        
 
 class TestCaseColaboradoresPost(TestUseColaboradores):
     def setUp(self):
@@ -169,3 +172,16 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
         self.assertContains(ret2, text='666222', count=1)
         self.assertContains(ret2, text='777333', count=1)
         
+        
+class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
+        
+    def test_formulario(self):
+        self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
+        self.assertContains(self.response, text='name="arquivo_csv"')
+    
+    def test_submit(self):
+        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:
+            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})                
+        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 2) 
+            
+            

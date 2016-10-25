@@ -29,12 +29,6 @@
 
 				</tbody>
 			</table>
-			<script>
-				$(document).ready(function() {
-					//var jss = new JSimpleSpreadsheet('.colaboradores',{});
-				});
-			</script>
-
 			<div class="btn-group barra-colaboradores">
 				<div class="btn-group">
 					<input class="btn btn-primary" type="submit" value="Salvar">
@@ -51,11 +45,11 @@
 		<h4>Importar</h4>
 	</div>
 	<div class="panel-body">
-		<form action="" method="post" enctype="multipart/form-data">
+		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
 			<div class="row">
 				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
 				<div class="col-sm-6">
-					{% csrf_token %} <input type="file" class="btn">
+					{% csrf_token %} <input name="arquivo_csv" type="file" class="btn">
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">

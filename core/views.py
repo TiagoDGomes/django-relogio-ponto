@@ -8,6 +8,7 @@ from django.urls.base import reverse
 from core.models import Colaborador, Matricula
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
+from pprint import pprint
 
 
 def site_logout(request):
@@ -40,3 +41,18 @@ def salvar_colaboradores(request):
         form_colaboradores.save()
     return HttpResponseRedirect(reverse('index'))
 
+@login_required
+def importar_arquivo_csv(request):
+
+    
+    print("teste: " + handle_uploaded_file(request.FILES['arquivo_csv']))
+
+    return HttpResponseRedirect(reverse('index'))
+
+
+def handle_uploaded_file(rf):
+    content = ''
+    for chunk in rf.chunks():
+        content ='{0}{1}'.format(content, chunk)
+    return content
+            
