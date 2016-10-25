@@ -1,29 +1,24 @@
-{% if not colaboradores %}
+{% if not tem_colaboradores %}
 <div class="alert alert-info">Nenhum colaborador registrado.</div>
 {% else %}
-{{ colaboradores_mf }}
 <table class="table colaboradores" id="tabela_funcionarios">
 	<thead>
 		<tr>
-			<th></th>
 			<th>Nome</th>
 			<th>PIS</th>
 			<th>Matrículas</th>
-			<th>Relógios</th>
 		</tr>
 	</thead>
 	<tbody>
 		
 		{% for colaborador in colaboradores %}
 		<tr>
-			<td>
-				<!-- < input type="checkbox"> -->
-			</td>
+
 			<td>{{ colaborador.nome }}</td>
 			<td>{{ colaborador.pis }}</td>
-			<td>{% for matricula in colaborador.matriculas.all %}{{ matricula.numero }}<br>{% endfor %}
-			</td>
-			<td data-ignore>Relógio 1</td>
+			<td>{{ colaborador.matriculas }}</td> 
+		
+			
 		</tr>
 		{% endfor %}
 		
@@ -32,7 +27,7 @@
 </table>
 <script>
 $(document).ready(function(){
-	var jss = new JSimpleSpreadsheet('.colaboradores',{});
+	//var jss = new JSimpleSpreadsheet('.colaboradores',{});
 });
 </script>
 {% endif %}

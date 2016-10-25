@@ -9,3 +9,7 @@
 .main .form-principal .row {
 	margin-bottom: 1em;
 }
+.table input, .table textarea{
+	border: 0;
+	width: 100%
+}
