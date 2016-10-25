@@ -5,7 +5,8 @@ from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-from core.models import Colaborador
+from core.models import Colaborador, Matricula
+from django.forms.formsets import formset_factory
 
 
 def site_logout(request):
@@ -17,6 +18,8 @@ def site_logout(request):
 def index(request): 
     form_gerar_arquivo = GerarArquivoForm() 
     colaboradores = Colaborador.objects.all()
+    colaboradores_mf = formset_factory(Colaborador,extra=0)()
+    print(colaboradores_mf)
     return render(request, 'index.html', locals())
 
 

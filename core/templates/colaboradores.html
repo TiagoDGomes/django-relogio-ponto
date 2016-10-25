@@ -1,7 +1,8 @@
 {% if not colaboradores %}
 <div class="alert alert-info">Nenhum colaborador registrado.</div>
 {% else %}
-<table class="table" id="tabela_funcionarios">
+{{ colaboradores_mf }}
+<table class="table colaboradores" id="tabela_funcionarios">
 	<thead>
 		<tr>
 			<th></th>
@@ -20,15 +21,20 @@
 			</td>
 			<td>{{ colaborador.nome }}</td>
 			<td>{{ colaborador.pis }}</td>
-			<td>{% for matricula in colaborador.matriculas.all %} &bullet; {{ matricula.numero }}<br> {% endfor %}
+			<td>{% for matricula in colaborador.matriculas.all %}{{ matricula.numero }}<br>{% endfor %}
 			</td>
-			<td>Relógio 1</td>
+			<td data-ignore>Relógio 1</td>
 		</tr>
 		{% endfor %}
+		
 
 	</tbody>
 </table>
-
+<script>
+$(document).ready(function(){
+	var jss = new JSimpleSpreadsheet('.colaboradores',{});
+});
+</script>
 {% endif %}
 <div class="panel">
 	<div class="panel-body">
@@ -37,7 +43,6 @@
 				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
 				<div class="col-sm-6">
 					{% csrf_token %} <input type="file" class="btn">
-
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">

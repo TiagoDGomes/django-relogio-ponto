@@ -4,6 +4,7 @@ from django.urls.base import  reverse
 from django.contrib import auth
 from core.models import Colaborador, Matricula
 
+TOTAL_INPUTS_FIXOS = 8
 
 
 class TestUseParaCriarUsuarioLogado(TestCase):   
@@ -38,7 +39,6 @@ class TestPaginaPrincipal(TestUseParaUsuarioLogado):
     
     def test_formulario(self):   
         self.assertContains(self.response, text='csrfmiddlewaretoken')  
-        self.assertContains(self.response, text='<input', count=8)
         self.assertContains(self.response, text='type="submit"', count=2)        
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
         self.assertContains(self.response, text=reverse('site_logout'), )
@@ -128,5 +128,6 @@ class TestCaseColaboradores(TestUseColaboradores):
             self.assertContains(self.response, text=matricula.numero)
            
     def test_tabela_funcionarios(self):
-        self.assertContains(self.response, 'id="tabela_funcionarios"')    
+        self.assertContains(self.response, 'id="tabela_funcionarios"')
+        self.assertContains(self.response, text="<input ", count=len(self.colaboradores)*3 + TOTAL_INPUTS_FIXOS)    
 

@@ -2,3 +2,6 @@
 [submodule "pyRelogioPonto"]
 	path = pyRelogioPonto
 	url = https://github.com/TiagoDGomes/pyRelogioPonto.git
+[submodule "core/static/jsimplespreadsheet"]
+	path = core/static/jsimplespreadsheet
+	url = https://github.com/TiagoDGomes/JSimpleSpreadsheet.git

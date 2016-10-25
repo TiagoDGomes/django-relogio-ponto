@@ -8,7 +8,12 @@
 <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css">
 <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css">
 <link rel="stylesheet" href="{% static 'css/bootstrap-datepicker3.min.css' %}" type="text/css">
-
+<link rel="stylesheet" type="text/css" href="{% static 'jsimplespreadsheet/jsimplespreadsheet.css' %}">
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+<script src="{% static 'jsimplespreadsheet/jsimplespreadsheet.js' %}"></script>	
 </head>
 <body>
 	<div class="main">
@@ -52,10 +57,7 @@
 
 
 	</div>
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-	<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
+
 	<script>
 		$('.input-daterange').datepicker({
 			format : "dd/mm/yyyy",
