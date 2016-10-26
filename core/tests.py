@@ -2,9 +2,11 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
-from core.models import Colaborador, Matricula
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
 from settings import BASE_DIR
 import os
+from datetime import datetime
+import time
 
 TOTAL_SUBMITS = 3
 TOTAL_INPUT_TEXT_FIXOS = 2
@@ -21,6 +23,8 @@ class TestUseParaCriarUsuarioLogado(TestCase):
         self.user = User.objects.create_user(username='testuser', password='1234qwer')
         self.logged_in = self.client.login(username='testuser', password='1234qwer')
 
+
+
 class TestUseParaCriarUsuarioAdminLogado(TestUseParaCriarUsuarioLogado):
     def setUp(self):
         TestUseParaCriarUsuarioLogado.setUp(self)
@@ -29,10 +33,12 @@ class TestUseParaCriarUsuarioAdminLogado(TestUseParaCriarUsuarioLogado):
         self.user.save()
     
 
+
 class TestUseParaUsuarioLogado(TestUseParaCriarUsuarioLogado):   
     def setUp(self):        
         super(TestUseParaUsuarioLogado, self).setUp()
         self.response = self.client.get('/')
+        
         
         
 class TestPaginaInicialSemAutenticar(TestCase):
@@ -42,6 +48,7 @@ class TestPaginaInicialSemAutenticar(TestCase):
 
     def test_302(self):
         self.assertEqual(302, self.response.status_code)        
+        
         
         
 class TestPaginaPrincipal(TestUseParaUsuarioLogado):
@@ -67,16 +74,10 @@ class TestLogout(TestUseParaUsuarioLogado):
         user = auth.get_user(self.client)   
         self.assertFalse(user.is_authenticated())   
         
-class TestGerarArquivo(TestUseParaUsuarioLogado):
-    
-    def setUp(self):
-        super(TestGerarArquivo, self).setUp()
-        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
-         
-    def test_ok(self):
-        self.assertEqual(200, self.response.status_code)   
-        self.assertTrue('Content-Disposition' in self.response) 
-        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        
+        
+
+            
         
 class TestRelogioAddAdmin(TestUseParaCriarUsuarioAdminLogado):
     
@@ -86,6 +87,7 @@ class TestRelogioAddAdmin(TestUseParaCriarUsuarioAdminLogado):
     
     def test_remove_save_button(self):
         self.assertNotContains(self.response, text='name="_save"')  
+        
         
              
 class TestUseColaboradores(TestUseParaUsuarioLogado): 
@@ -100,13 +102,13 @@ class TestUseColaboradores(TestUseParaUsuarioLogado):
         
         self.colaboradores.append(colaborador)    
         matricula = Matricula()
-        matricula.colaborador = colaborador
         matricula.numero = self.matricula_antiga1
+        matricula.colaborador = colaborador
         matricula.save()
         
         matricula2 = Matricula()
-        matricula2.colaborador = colaborador
         matricula2.numero = self.matricula_antiga2
+        matricula2.colaborador = colaborador
         matricula2.save()
         
         self.matriculas = []
@@ -124,6 +126,60 @@ class TestUseColaboradores(TestUseParaUsuarioLogado):
         super(TestUseColaboradores, self).setUp()
         
         
+  
+      
+class TestObterRegistros(TestUseColaboradores):
+    
+    def setUp(self):
+        super(TestObterRegistros, self).setUp()
+        self.relogio = RelogioPonto.objects.create(nome='Teste',tipo=1)
+        self.relogio.save()
+        self.batida = []
+
+        self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('18/10/2016 10:23:45','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[0],
+                                                   )
+                            )
+        self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('18/10/2016 17:00:12','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[0],
+                                                   )
+                            )
+        self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('19/10/2016 10:25:00','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[0]
+                                                   )
+                            )
+        self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('19/10/2016 16:59:12','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[0]
+                                                   )
+                            )
+        self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('17/10/2016 07:25:00','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[1]
+                                                   )
+                            )
+        self.batida.append( RegistroPonto.objects.create(relogio=self.relogio,
+                                                   data_hora=datetime.strptime('18/10/2016 12:00:00','%d/%m/%Y %H:%M:%S'),
+                                                   colaborador=self.colaboradores[1]
+                                                   )
+                           )
+        
+        
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
+         
+    def test_obter(self):
+        self.assertEqual(200, self.response.status_code)   
+        self.assertTrue('Content-Disposition' in self.response) 
+        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        
+    #def test_resultado(self):
+        
+        
+                
+        
 class TestCaseColaboradores(TestUseColaboradores):
     def test_gravacao(self):
         self.assertEqual(len(self.colaboradores), (Colaborador.objects.count()), msg='Quantidade invalida de colaboradores registrados')
@@ -140,6 +196,7 @@ class TestCaseColaboradores(TestUseColaboradores):
         self.assertContains(self.response, 'id="tabela_funcionarios"')
         numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
         self.assertContains(self.response, text="<input ",  count=numero_inputs)    
+
         
 
 class TestCaseColaboradoresPost(TestUseColaboradores):
@@ -172,6 +229,7 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
         self.assertContains(ret2, text='666222', count=1)
         self.assertContains(ret2, text='777333', count=1)
         
+
         
 class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
         
@@ -181,7 +239,7 @@ class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
     
     def test_submit(self):
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:
-            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})                
+            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})              
         self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 2) 
             
-            
+

@@ -24,7 +24,7 @@ class Matricula(models.Model):
     def __str__(self):
         return str(self.numero)
     
-    
+
     
     
 class RelogioPonto(models.Model):      
@@ -70,5 +70,16 @@ class Parametro(models.Model):
         return self.propriedade
 
     class Meta:
-        verbose_name = 'parâmetro'   
+        verbose_name = 'parâmetro'  
+        
+         
+
+class RegistroPonto(models.Model):
+    relogio = models.ForeignKey(RelogioPonto)
+    colaborador = models.ForeignKey(Colaborador)
+    data_hora = models.DateTimeField()
+    
+    def __str__(self):
+        return "{0} - {1}".format(self.data_hora.strptime('%d/%m/%Y'), self.colaborador.nome)
+    
     

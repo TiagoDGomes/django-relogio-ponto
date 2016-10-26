@@ -42,11 +42,19 @@ def salvar_colaboradores(request):
     return HttpResponseRedirect(reverse('index'))
 
 @login_required
-def importar_arquivo_csv(request):
-
-    
-    print("teste: " + handle_uploaded_file(request.FILES['arquivo_csv']))
-
+def importar_arquivo_csv(request):    
+    for linha in handle_uploaded_file(request.FILES['arquivo_csv']).split('\n'):
+        if linha:
+            celulas = linha.split(',')
+            colaborador = Colaborador.objects.get_or_create(pis=int(celulas[1]))[0]
+            colaborador.nome = celulas[0]
+            colaborador.save()
+            if celulas[2]:
+                matricula = Matricula()
+                matricula.numero = int(celulas[2])
+                matricula.colaborador = colaborador
+                matricula.save()
+            colaborador.save()
     return HttpResponseRedirect(reverse('index'))
 
 
