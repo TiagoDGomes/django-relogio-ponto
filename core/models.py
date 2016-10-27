@@ -83,3 +83,16 @@ class RegistroPonto(models.Model):
         return "{0} - {1}".format(self.data_hora.strptime('%d/%m/%Y'), self.colaborador.nome)
     
     
+class PadraoExportacao(models.Model):
+    parametro = models.CharField(max_length=15)
+    formato = models.CharField(max_length=100)
+    
+    def gerar_com(self, recurso):
+        if type(recurso) == str:
+            return self.gerar_com_texto(recurso) 
+        
+            
+    def gerar_com_texto(self, texto):
+        pass
+    
+    

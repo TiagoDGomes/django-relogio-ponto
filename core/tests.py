@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
-from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto,\
+    PadraoExportacao
 from settings import BASE_DIR
 import os
 from datetime import datetime
@@ -168,12 +169,16 @@ class TestObterRegistros(TestUseColaboradores):
                            )
         
         
+        
+        
         self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
          
     def test_obter(self):
         self.assertEqual(200, self.response.status_code)   
         self.assertTrue('Content-Disposition' in self.response) 
         self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        
+        self.assertContains(self.batida[0], PadraoExportacao.gerar_com(self.response))
         
     #def test_resultado(self):
         
@@ -240,6 +245,8 @@ class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
     def test_submit(self):
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:
             self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})              
-        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 2) 
+        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 2)
+
+ 
             
 
