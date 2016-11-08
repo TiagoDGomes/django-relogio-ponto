@@ -176,9 +176,8 @@ class TestObterRegistros(TestUseColaboradores):
     def test_obter(self):
         self.assertEqual(200, self.response.status_code)   
         self.assertTrue('Content-Disposition' in self.response) 
-        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
-        
-        self.assertContains(self.batida[0], PadraoExportacao.gerar_com(self.response))
+        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )        
+        #self.assertContains(self.batida[0], PadraoExportacao.gerar_com(self.response))
         
     #def test_resultado(self):
         
@@ -205,8 +204,7 @@ class TestCaseColaboradores(TestUseColaboradores):
         
 
 class TestCaseColaboradoresPost(TestUseColaboradores):
-    def setUp(self):
-        super(TestCaseColaboradoresPost, self).setUp()
+    def test_alteracoes(self):
         self.pis_antigo = self.colaboradores[0].pis        
         self.novo_nome = 'TesteSalvar'
         self.response_post = self.client.post(reverse('salvar_colaboradores'), {
@@ -216,14 +214,18 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
                                                            'form-MAX_NUM_FORMS': 1000,
                                                            'form-0-id': self.colaboradores[0].id, 
                                                            'form-0-nome': self.novo_nome, 
-                                                           'form-0-pis': '4444', 
+                                                           'form-0-pis': '4441234444', 
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
-    def test_redirect(self):        
+           
         self.assertRedirects(self.response_post, expected_url=reverse('index'))
+        self.response_get2 = self.client.get(reverse('index'))
+        self.assertNotContains(self.response_get2, self.pis_antigo)
+        self.assertContains(self.response_get2, '4441234444')
         
-    def test_alteracoes(self):
-        colaborador_salvo = Colaborador.objects.get(pis='4444')
+    
+        
+        colaborador_salvo = Colaborador.objects.get(pis='4441234444')
         self.assertEqual(colaborador_salvo.nome, 'TesteSalvar', 'Nome nao foi salvo')
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=666222).count(), 1)
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=777333).count(), 1)

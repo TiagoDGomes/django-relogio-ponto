@@ -3,6 +3,7 @@ from django.forms import widgets
 from core.models import Colaborador, Matricula
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
+from pprint import pprint
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -31,18 +32,20 @@ class ColaboradorForm(forms.ModelForm):
  
     def save(self, *args, **kwargs):
         super(ColaboradorForm, self).save(*args, **kwargs)
-        matriculas_post = self.cleaned_data['matriculas'].split('\n')
-        if self.cleaned_data['id']:
-            self.cleaned_data['id'].matriculas.all().delete()
+        matriculas_post = self.cleaned_data['matriculas'].split('\n')        
+
+        self.instance.matriculas.all().delete()
+        self.instance.save()
         for numero_a_salvar in matriculas_post:
             if numero_a_salvar:
                 matricula = Matricula()
                 matricula.numero = numero_a_salvar
-                matricula.colaborador = self.cleaned_data['id']
+                matricula.colaborador = self.instance
+                #matricula.colaborador.save()
+               
                 matricula.save()
  
 ColaboradorFormSet = modelformset_factory(Colaborador, 
                                          form=ColaboradorForm, 
                                          extra=1, 
                                          fields=('__all__')) 
-  

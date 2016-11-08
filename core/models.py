@@ -22,7 +22,7 @@ class Matricula(models.Model):
     numero = models.IntegerField(verbose_name='número')   
                
     def __str__(self):
-        return str(self.numero)
+        return "Matricula %s de %s" % (str(self.numero) , self.colaborador)
     
 
     
@@ -87,12 +87,13 @@ class PadraoExportacao(models.Model):
     parametro = models.CharField(max_length=15)
     formato = models.CharField(max_length=100)
     
-    def gerar_com(self, recurso):
+    @classmethod
+    def gerar_com(cls, recurso):
         if type(recurso) == str:
-            return self.gerar_com_texto(recurso) 
+            return cls.gerar_com_texto(recurso) 
         
-            
-    def gerar_com_texto(self, texto):
+    @classmethod        
+    def gerar_com_texto(cls, texto):
         pass
     
     
