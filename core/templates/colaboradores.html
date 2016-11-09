@@ -1,7 +1,13 @@
-
+{% extends 'base.html' %}
+{% block conteudo %}
+<h3>Colaboradores</h3>
 <form action="{% url 'salvar_colaboradores' %}" method="post">
 
-	{% csrf_token %} {{ form_colaboradores.management_form }}
+	{% csrf_token %} 
+	
+	{{ form_colaboradores.management_form }}
+	
+	
 	<div class="panel panel-default">
 		<div class="panel-body">
 			<table class="table colaboradores" id="tabela_funcionarios">
@@ -58,3 +64,4 @@
 		</form>
 	</div>
 </div>
+{% endblock conteudo %}

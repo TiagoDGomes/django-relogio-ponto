@@ -8,7 +8,7 @@ from settings import BASE_DIR
 import os
 from datetime import datetime
 import time
-
+''''
 TOTAL_SUBMITS = 3
 TOTAL_INPUT_TEXT_FIXOS = 2
 TOTAL_INPUT_FILE_FIXOS = 1
@@ -17,7 +17,7 @@ TOTAL_CSRFTOKEN = 3
 NUMERO_INPUTS_TABELACOLABORADOR = 3
 TOTAL_MANAGEMENTFORM = 1
 TOTAL_INPUTS_FIXOS = TOTAL_MANAGEMENTFORM*4 + TOTAL_SUBMITS + TOTAL_INPUT_TEXT_FIXOS +  TOTAL_INPUT_FILE_FIXOS +  TOTAL_INPUT_CHECKBOX +  TOTAL_CSRFTOKEN
-
+'''
 
 class TestUseParaCriarUsuarioLogado(TestCase):   
     def setUp(self):
@@ -55,12 +55,12 @@ class TestPaginaInicialSemAutenticar(TestCase):
 class TestPaginaPrincipal(TestUseParaUsuarioLogado):
     
     def test_formulario(self):   
-        self.assertContains(self.response, text='csrfmiddlewaretoken', count=TOTAL_CSRFTOKEN)  
-        self.assertContains(self.response, text='type="submit"', count=TOTAL_SUBMITS)        
+        self.assertContains(self.response, text='csrfmiddlewaretoken', )  
+        self.assertContains(self.response, text='type="submit"',)        
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
-        self.assertContains(self.response, text=reverse('site_logout'), )
-        self.assertContains(self.response, text='type="file"', )
-    
+        self.assertContains(self.response, text=reverse('site_logout'), )        
+        self.assertNotContains(self.response, text='type="file"', )
+
 
         
     
@@ -92,7 +92,8 @@ class TestRelogioAddAdmin(TestUseParaCriarUsuarioAdminLogado):
         
              
 class TestUseColaboradores(TestUseParaUsuarioLogado): 
-    def setUp(self):
+    def setUp(self):    
+        
         self.colaboradores = []
         colaborador = Colaborador()
         colaborador.nome = 'Teste 1'
@@ -123,9 +124,46 @@ class TestUseColaboradores(TestUseParaUsuarioLogado):
         colaborador.save()
         
         self.colaboradores.append(colaborador)
+        super(TestUseColaboradores, self).setUp()    
+        self.response = self.client.get(reverse('colaboradores'))
+
         
-        super(TestUseColaboradores, self).setUp()
         
+
+        
+class TestPaginaColaborador(TestUseColaboradores):
+    
+    
+    def test_formulario(self):  
+        print self.response 
+        self.assertContains(self.response, text='csrfmiddlewaretoken',)  
+        self.assertContains(self.response, text='type="submit"', count=2)        
+        self.assertNotContains(self.response, text=reverse('gerar_arquivo'), )
+        self.assertContains(self.response, text=reverse('site_logout'), )
+        self.assertContains(self.response, text='type="file"', )
+        
+        NUMERO_INPUTS_TABELACOLABORADOR = 3
+        
+        TOTAL_INPUTS_FIXOS = 9
+        self.assertContains(self.response, 'id="tabela_funcionarios"')
+        numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
+        self.assertContains(self.response, text="<input ",  count=numero_inputs)          
+        
+        self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
+        self.assertContains(self.response, text='name="arquivo_csv"')        
+        
+    def test_gravacao(self):
+        self.assertEqual(len(self.colaboradores), (Colaborador.objects.count()), msg='Quantidade invalida de colaboradores registrados')
+        
+    def test_listar_usuarios(self):
+        for colaborador in self.colaboradores:            
+            self.assertContains(self.response, text=colaborador.nome)
+            
+    def test_matriculas(self):    
+        for matricula in self.matriculas:  
+            self.assertContains(self.response, text=matricula.numero)
+           
+  
         
   
       
@@ -181,25 +219,6 @@ class TestObterRegistros(TestUseColaboradores):
         
     #def test_resultado(self):
         
-        
-                
-        
-class TestCaseColaboradores(TestUseColaboradores):
-    def test_gravacao(self):
-        self.assertEqual(len(self.colaboradores), (Colaborador.objects.count()), msg='Quantidade invalida de colaboradores registrados')
-        
-    def test_listar_usuarios(self):
-        for colaborador in self.colaboradores:            
-            self.assertContains(self.response, text=colaborador.nome)
-            
-    def test_matriculas(self):    
-        for matricula in self.matriculas:  
-            self.assertContains(self.response, text=matricula.numero)
-           
-    def test_tabela_funcionarios(self):
-        self.assertContains(self.response, 'id="tabela_funcionarios"')
-        numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
-        self.assertContains(self.response, text="<input ",  count=numero_inputs)    
 
         
 
@@ -218,8 +237,8 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
            
-        self.assertRedirects(self.response_post, expected_url=reverse('index'))
-        self.response_get2 = self.client.get(reverse('index'))
+        self.assertRedirects(self.response_post, expected_url=reverse('colaboradores'))
+        self.response_get2 = self.client.get(reverse('colaboradores'))
         self.assertNotContains(self.response_get2, self.pis_antigo)
         self.assertContains(self.response_get2, '4441234444')
         
@@ -229,20 +248,16 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
         self.assertEqual(colaborador_salvo.nome, 'TesteSalvar', 'Nome nao foi salvo')
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=666222).count(), 1)
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=777333).count(), 1)
-        ret2 = self.client.get(reverse('index'))
-        self.assertNotContains(ret2, text=self.pis_antigo)
-        self.assertNotContains(ret2, text=self.matricula_antiga1)
-        self.assertNotContains(ret2, text=self.matricula_antiga2)
-        self.assertContains(ret2, text='666222', count=1)
-        self.assertContains(ret2, text='777333', count=1)
+
+        self.assertNotContains(self.response_get2, text=self.matricula_antiga1)
+        self.assertNotContains(self.response_get2, text=self.matricula_antiga2)
+        self.assertContains(self.response_get2, text='666222', count=1)
+        self.assertContains(self.response_get2, text='777333', count=1)
         
 
         
 class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
-        
-    def test_formulario(self):
-        self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
-        self.assertContains(self.response, text='name="arquivo_csv"')
+
     
     def test_submit(self):
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:

@@ -19,8 +19,12 @@ def site_logout(request):
 @login_required
 def index(request): 
     form_gerar_arquivo = GerarArquivoForm() 
+    return render(request, 'exportar.html', locals())
+
+@login_required
+def colaboradores(request): 
     form_colaboradores = ColaboradorFormSet()
-    return render(request, 'index.html', locals())
+    return render(request, 'colaboradores.html', locals())
 
 
 @login_required    
@@ -39,7 +43,7 @@ def salvar_colaboradores(request):
     form_colaboradores = ColaboradorFormSet(request.POST)
     if form_colaboradores.is_valid():
         form_colaboradores.save()
-    return HttpResponseRedirect(reverse('index'))
+    return HttpResponseRedirect(reverse('colaboradores'))
 
 @login_required
 def importar_arquivo_csv(request):    

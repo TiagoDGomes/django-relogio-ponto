@@ -1,4 +1,6 @@
-
+{% extends 'base.html' %}
+{% block conteudo %}
+<h3>Exportar registros</h3>
 <form method="post" action="{% url 'gerar_arquivo' %}">
 	{% csrf_token %}
 	<div class="row panel">
@@ -47,3 +49,4 @@
 			$(this).addClass('input-sm form-control')
 		});
 	</script>
+{% endblock conteudo %}
