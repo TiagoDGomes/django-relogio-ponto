@@ -135,7 +135,7 @@ class TestPaginaColaborador(TestUseColaboradores):
     
     
     def test_formulario(self):  
-        print self.response 
+        
         self.assertContains(self.response, text='csrfmiddlewaretoken',)  
         self.assertContains(self.response, text='type="submit"', count=2)        
         self.assertNotContains(self.response, text=reverse('gerar_arquivo'), )
