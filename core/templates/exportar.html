@@ -37,10 +37,9 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-6">
-			<div class="form-group">
-			  <label for="sel1">Select list:</label>
-			  <select class="form-control" id="sel1">
-			  </select>
+			<div class="form-group formato">
+			  <label for="{{ form_gerar_arquivo.formato.auto_id }}">{{ form_gerar_arquivo.formato.label }}:</label>
+			  {{ form_gerar_arquivo.formato }}
 			</div>
 		</div>
 	</div>
@@ -55,7 +54,7 @@
 			autoclose : true,
 			todayHighlight : true
 		});
-		$('span.input-gerar-arquivo input').each(function(t) {
+		$('span.input-gerar-arquivo input, .formato select ').each(function(t) {
 			$(this).addClass('input-sm form-control')
 		});
 	</script>

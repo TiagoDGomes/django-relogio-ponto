@@ -1,21 +1,25 @@
+# -*- coding: utf-8 -*- 
+from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
 from core.models import Colaborador, Matricula
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
-from pprint import pprint
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=widgets.PasswordInput())
+    
 
 class GerarArquivoForm(forms.Form):
     inicio = forms.DateField()
     fim = forms.DateField()
-    
+    formato = forms.ChoiceField(choices=[('default','Formato padrão')], label='Formato')
     @property
     def nome_arquivo(self):
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
+    
 
 class ColaboradorForm(forms.ModelForm):
     matriculas = forms.CharField(widget=Textarea(attrs={'rows':1, 'cols':6,}), required=False)
