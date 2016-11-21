@@ -94,66 +94,49 @@ class RegistroPonto(models.Model):
         
     
     def converter_em_texto(self, formato):        
-        result = ''
+        result = []
         contem_matricula = False
         for f in formato:
             if f[0] == 'matricula':
                 contem_matricula = True
                 break                
         
-        if contem_matricula:
-            for matricula in self.colaborador.matriculas.all():
+        if contem_matricula: # Se contiver matrícula, é preciso gerar registro por cada matrícula
+            for matricula in self.colaborador.matriculas.all(): # 
                 formato.append(('obj_matricula', matricula))
-                result += self._converter_em_texto(formato)
-                  
+                result.append( self._converter_em_texto(formato) )                  
+            return "\n".join(result)              
         else:
-            result = self._converter_em_texto(formato)        
+            return self._converter_em_texto(formato)  
         
-                
-        return result 
+              
+         
     
     def _converter_em_texto(self, params):        
-        result = ''
+        res = []
         for p in params:
-            kw = p[0] 
+            param_nome = p[0] 
             try:      
-                param = p[1]
+                param_valor = p[1]
             except:
-                param = None 
+                param_valor = None 
                   
-            value = ''                 
-            if kw == 'matricula':
+            valor = ''                 
+            if param_nome == 'matricula':
                 matricula = params[-1][1]               
-                value = str(matricula.numero).zfill(param)                    
-            elif kw == 'pis':
+                valor = str(matricula.numero).zfill(param_valor)                    
+            elif param_nome == 'pis':
                 pis = somente_numeros(self.colaborador.pis)
-                value = str(pis).zfill(param)                    
-            elif kw == 'datahora':
-                value = self.data_hora.strftime(param)
-            elif kw == 'personalizado':
-                value = param
+                valor = str(pis).zfill(param_valor)                    
+            elif param_nome == 'datahora':
+                valor = self.data_hora.strftime(param_valor)
+            elif param_nome == 'personalizado':
+                valor = param_valor
                 
-            result += value
-            
-        if result != '':
-            result += '\n'   
-        return result 
+            res.append(valor)            
+         
+        return "".join(res) 
     
-          
-     
-    
-    
-class PadraoExportacao(models.Model):
-    parametro = models.CharField(max_length=15)
-    formato = models.CharField(max_length=100, null=True, blank=True)
-    tamanho = models.IntegerField(null=True, blank=True)
-    
-    @classmethod
-    def gerar_com(cls, recurso):
-        if type(recurso) == str:
-            return cls.gerar_com_texto(recurso) 
-        
-    @classmethod        
-    def gerar_com_texto(cls, texto):
-        pass
-    
+
+
+                

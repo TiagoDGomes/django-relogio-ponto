@@ -37,7 +37,7 @@ def gerar_arquivo(request):
         response = HttpResponse('', content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
-        response = HttpResponseForbidden()
+        response = HttpResponseForbidden('Requisição inválida.')
     return response
 
 
