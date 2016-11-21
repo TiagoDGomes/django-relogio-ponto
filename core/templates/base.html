@@ -11,12 +11,27 @@
 		<script src="{% static 'js/jquery.min.js' %}"></script>
 		<script src="{% static 'js/bootstrap.min.js' %}"></script>
 		<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+		<script src="{% static 'js/jquery.bootpag.min.js' %}"></script>
 		<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
-		<script src="{% static 'jsimplespreadsheet/jsimplespreadsheet.js' %}"></script>	
+		<script src="{% static 'jsimplespreadsheet/jsimplespreadsheet.js' %}"></script>
+		<script>
+			$(document).ready(function(){
+				var tab;
+				switch(window.location.pathname){
+					case '{% url "colaboradores" %}':
+						tab = 'tab-colaboradores';
+						break;
+					default:
+						tab = 'tab-exportar';
+				}
+				$('#' + tab).addClass('active');
+			});
+			console.log()
+		</script>	
 	</head>
 <body>
 	<div class="main">			
-			<ul class="nav nav-pills" role="tablist">
+			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" id="tab-exportar" ><a href="{% url 'index' %}">Exportar</a></li>
 				<li role="presentation" id="tab-colaboradores"><a href="{% url 'colaboradores' %}">Colaboradores</a></li>
 				<!-- <li role="presentation"><a data-toggle="tab" href="#registros_dia">Registros por dia</a></li>
@@ -25,12 +40,11 @@
 			</ul>
 			<div class="panel panel-default form-principal">
 			<div class="panel-body">
-				
+					
 					{% block conteudo %}
 					
-					{% endblock conteudo %} 
-				
-				
+					{% endblock conteudo %} 				
+					
 			</div>
 
 		</div>
