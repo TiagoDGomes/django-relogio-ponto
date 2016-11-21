@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 from django.db import models
 from pyRelogioPonto.relogioponto.base import get_rep_suportados
+from collections import OrderedDict
+from core.util import somente_numeros
 
 
 class Colaborador(models.Model):
@@ -34,6 +36,8 @@ class RelogioPonto(models.Model):
     nome = models.CharField(max_length=30)
     tipo = models.IntegerField(choices=CHOICES_TIPOS_RELOGIOS)
     
+
+    
     class Meta:
         verbose_name = 'relógio de ponto'
         verbose_name_plural = 'relógios de ponto'
@@ -57,8 +61,8 @@ class RelogioPonto(models.Model):
                         parametro.relogio = self
                         parametro.save()  
         return s
-            
-       
+    
+      
 
 
 class Parametro(models.Model):
@@ -81,7 +85,62 @@ class RegistroPonto(models.Model):
     data_hora = models.DateTimeField()
     
     def __str__(self):
-        return "{0} - {1}".format(self.data_hora.strptime('%d/%m/%Y'), self.colaborador.nome)
+        return "{nome} ({pis}): {batida}".format(
+                                                  batida=self.data_hora.strftime('%d/%m/%Y %H:%M'), 
+                                                  nome=self.colaborador.nome, 
+                                                  pis=self.colaborador.pis
+                                                  )
+    
+        
+    
+    def converter_em_texto(self, formato):        
+        result = ''
+        contem_matricula = False
+        for f in formato:
+            if f[0] == 'matricula':
+                contem_matricula = True
+                break                
+        
+        if contem_matricula:
+            for matricula in self.colaborador.matriculas.all():
+                formato.append(('obj_matricula', matricula))
+                result += self._converter_em_texto(formato)
+                  
+        else:
+            result = self._converter_em_texto(formato)        
+        
+                
+        return result 
+    
+    def _converter_em_texto(self, params):        
+        result = ''
+        for p in params:
+            kw = p[0] 
+            try:      
+                param = p[1]
+            except:
+                param = None 
+                  
+            value = ''                 
+            if kw == 'matricula':
+                matricula = params[-1][1]               
+                value = str(matricula.numero).zfill(param)                    
+            if kw == 'pis':
+                pis = somente_numeros(self.colaborador.pis)
+                value = str(pis).zfill(param)                    
+            elif kw == 'datahora':
+                value = self.data_hora.strftime(param)
+            elif kw == 'personalizado':
+                value = param
+                
+            result += value
+            
+        if result != '':
+            result += '\n'   
+        return result 
+    
+          
+     
     
     
 class PadraoExportacao(models.Model):
@@ -96,5 +155,4 @@ class PadraoExportacao(models.Model):
     @classmethod        
     def gerar_com_texto(cls, texto):
         pass
-    
     

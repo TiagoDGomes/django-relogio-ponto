@@ -2,12 +2,11 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
-from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto,\
-    PadraoExportacao
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
 from settings import BASE_DIR
 import os
 from datetime import datetime
-import time
+
 ''''
 TOTAL_SUBMITS = 3
 TOTAL_INPUT_TEXT_FIXOS = 2
@@ -176,12 +175,12 @@ class TestObterRegistros(TestUseColaboradores):
         self.batida = []
 
         self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
-                                                   data_hora=datetime.strptime('18/10/2016 10:23:45','%d/%m/%Y %H:%M:%S'),
+                                                   data_hora=datetime.strptime('18/09/2016 10:23:45','%d/%m/%Y %H:%M:%S'),
                                                    colaborador=self.colaboradores[0],
                                                    )
                             )
         self.batida.append(RegistroPonto.objects.create(relogio=self.relogio,
-                                                   data_hora=datetime.strptime('18/10/2016 17:00:12','%d/%m/%Y %H:%M:%S'),
+                                                   data_hora=datetime.strptime('18/09/2016 17:00:12','%d/%m/%Y %H:%M:%S'),
                                                    colaborador=self.colaboradores[0],
                                                    )
                             )
@@ -209,7 +208,32 @@ class TestObterRegistros(TestUseColaboradores):
         
         
         
-        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'}) 
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'})
+     
+    
+    
+    def test_converter(self):
+        formato = [('matricula',15), 
+                   ('datahora', "%d%m%y%H%M"),
+                   ('personalizado','00100100'),
+                  ]
+        texto = self.batida[0].converter_em_texto(formato)        
+        self.assertTrue('000000000123456180916102300100100' in texto)
+        texto = self.batida[1].converter_em_texto(formato)                
+        self.assertTrue('000000000123456180916170000100100' in texto)      
+        texto = self.batida[5].converter_em_texto(formato)                
+        self.assertFalse('123456' in texto)
+        self.assertFalse('789012' in texto)
+        self.assertEquals('' , texto)
+        formato = [('pis',15), 
+                   ('datahora', "%d%m%y%H%M"),
+                   ('personalizado','00100100'),
+                  ]
+        
+        texto = self.batida[5].converter_em_texto(formato)                
+        self.assertTrue('000034644028941181016120000100100' in texto)
+        
+        
          
     def test_obter(self):
         self.assertEqual(200, self.response.status_code)   
