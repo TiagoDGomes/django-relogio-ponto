@@ -262,7 +262,7 @@ class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
     def test_submit(self):
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:
             self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})              
-        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 2)
+        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 3)
 
  
             
