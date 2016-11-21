@@ -11,6 +11,7 @@ class Colaborador(models.Model):
     
     class Meta:
         verbose_name_plural = 'colaboradores'
+        ordering = ('nome',)
            
     def __str__(self):
         return "{0} ({1})".format(self.nome, self.pis)
@@ -19,7 +20,7 @@ class Colaborador(models.Model):
     
 class Matricula(models.Model):
     colaborador = models.ForeignKey(Colaborador, related_name='matriculas')
-    numero = models.IntegerField(verbose_name='número')   
+    numero = models.IntegerField(verbose_name='número',)   
                
     def __str__(self):
         return "Matricula %s de %s" % (str(self.numero) , self.colaborador)
