@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*- 
+from __future__ import unicode_literals
 from django.shortcuts import render
 from core.forms import GerarArquivoForm, ColaboradorForm, ColaboradorFormSet
 from django.contrib.auth import logout
@@ -9,6 +11,7 @@ from core.models import Colaborador, Matricula
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from pprint import pprint
+from pyRelogioPonto.relogioponto import util
 
 
 def site_logout(request):
@@ -53,9 +56,13 @@ def importar_arquivo_csv(request):
             colaborador = Colaborador.objects.get_or_create(pis=int(celulas[1]))[0]
             colaborador.nome = celulas[0]
             colaborador.save()
-            if celulas[2]:
-                matricula = Matricula()
-                matricula.numero = int(celulas[2])
+            if celulas[2].strip():
+                try:
+                    matricula = Matricula.objects.get(numero=int(celulas[2]))
+                except:                    
+                    matricula = Matricula()
+                    matricula.numero = int(celulas[2])
+                
                 matricula.colaborador = colaborador
                 matricula.save()
             colaborador.save()
@@ -65,6 +72,7 @@ def importar_arquivo_csv(request):
 def handle_uploaded_file(rf):
     content = ''
     for chunk in rf.chunks():
-        content ='{0}{1}'.format(content, chunk)
+        chunk_decode = util.remover_acentos(chunk.decode('utf-8'))                   
+        content ='{0}{1}'.format(content, chunk_decode)
     return content
             
