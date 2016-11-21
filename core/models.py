@@ -125,7 +125,7 @@ class RegistroPonto(models.Model):
             if kw == 'matricula':
                 matricula = params[-1][1]               
                 value = str(matricula.numero).zfill(param)                    
-            if kw == 'pis':
+            elif kw == 'pis':
                 pis = somente_numeros(self.colaborador.pis)
                 value = str(pis).zfill(param)                    
             elif kw == 'datahora':
@@ -145,7 +145,8 @@ class RegistroPonto(models.Model):
     
 class PadraoExportacao(models.Model):
     parametro = models.CharField(max_length=15)
-    formato = models.CharField(max_length=100)
+    formato = models.CharField(max_length=100, null=True, blank=True)
+    tamanho = models.IntegerField(null=True, blank=True)
     
     @classmethod
     def gerar_com(cls, recurso):

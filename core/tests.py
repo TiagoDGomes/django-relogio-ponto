@@ -56,6 +56,7 @@ class TestPaginaPrincipal(TestUseParaUsuarioLogado):
     def test_formulario(self):   
         self.assertContains(self.response, text='csrfmiddlewaretoken', )  
         self.assertContains(self.response, text='type="submit"',)        
+        self.assertContains(self.response, text='<select ',)        
         self.assertContains(self.response, text=reverse('gerar_arquivo'), )
         self.assertContains(self.response, text=reverse('site_logout'), )        
         self.assertNotContains(self.response, text='type="file"', )
@@ -209,28 +210,30 @@ class TestObterRegistros(TestUseColaboradores):
         
         
         self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016', 'fim': '19/10/2016'})
-     
-    
-    
-    def test_converter(self):
-        formato = [('matricula',15), 
-                   ('datahora', "%d%m%y%H%M"),
-                   ('personalizado','00100100'),
-                  ]
-        texto = self.batida[0].converter_em_texto(formato)        
-        self.assertTrue('000000000123456180916102300100100' in texto)
-        texto = self.batida[1].converter_em_texto(formato)                
-        self.assertTrue('000000000123456180916170000100100' in texto)      
-        texto = self.batida[5].converter_em_texto(formato)                
-        self.assertFalse('123456' in texto)
-        self.assertFalse('789012' in texto)
-        self.assertEquals('' , texto)
-        formato = [('pis',15), 
-                   ('datahora', "%d%m%y%H%M"),
-                   ('personalizado','00100100'),
-                  ]
         
-        texto = self.batida[5].converter_em_texto(formato)                
+        self.formato = [('matricula',15), 
+                   ('datahora', "%d%m%y%H%M"),
+                   ('personalizado','00100100'),
+                  ]
+        self.batida_texto1 = self.batida[0].converter_em_texto(self.formato) 
+        self.batida_texto2 = self.batida[1].converter_em_texto(self.formato) 
+        self.batida_texto3 = self.batida[5].converter_em_texto(self.formato)                
+        
+    
+    
+    def test_converter(self):        
+        self.assertTrue('000000000123456180916102300100100' in self.batida_texto1)     
+        self.assertTrue('000000000123456180916170000100100' in self.batida_texto2)
+        self.assertFalse('123456' in self.batida_texto3)
+        self.assertFalse('789012' in self.batida_texto3)        
+        self.assertEquals('' , self.batida_texto3)
+        
+    def test_converter_outro_formato(self):        
+        formato_com_pis = [('pis',15), 
+                   ('datahora', "%d%m%y%H%M"),
+                   ('personalizado','00100100'),
+                  ]
+        texto = self.batida[5].converter_em_texto(formato_com_pis)                
         self.assertTrue('000034644028941181016120000100100' in texto)
         
         
@@ -238,10 +241,13 @@ class TestObterRegistros(TestUseColaboradores):
     def test_obter(self):
         self.assertEqual(200, self.response.status_code)   
         self.assertTrue('Content-Disposition' in self.response) 
-        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )        
-        #self.assertContains(self.batida[0], PadraoExportacao.gerar_com(self.response))
+        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+     
+        #self.assertContains(self.response, self.batida_texto1 )
+        #self.assertContains(self.response, self.batida_texto2 )
+        #self.assertContains(self.response, self.batida_texto3 )
         
-    #def test_resultado(self):
+        
         
 
         
