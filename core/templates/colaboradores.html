@@ -19,20 +19,20 @@
 					</tr>
 				</thead>
 				<tbody>
-
-					{% for colaborador in form_colaboradores %}
-					
+					{% for colaborador in form_colaboradores %}					
 					<tr class="{%if colaborador.id.value %}old-item{% else %}new-item{%endif%}">
-
-						<td>{{ colaborador.id }}{{ colaborador.nome }}</td>
-						<td>{{ colaborador.pis }}</td>
-						<td>{{ colaborador.matriculas }}</td>
-
-					</tr>
-					
+						<td>
+							{{ colaborador.id }}
+							{{ colaborador.nome }}
+						</td>
+						<td>
+							{{ colaborador.pis }}
+						</td>
+						<td>
+							{{ colaborador.matriculas }}
+						</td>
+					</tr>					
 					{% endfor %}
-
-
 				</tbody>
 			</table>
 			<div class="btn-group barra-colaboradores">
@@ -55,7 +55,8 @@
 			<div class="row">
 				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
 				<div class="col-sm-6">
-					{% csrf_token %} <input name="arquivo_csv" type="file" class="btn">
+					{% csrf_token %} 
+					<input name="arquivo_csv" type="file" class="btn">
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">
