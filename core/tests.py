@@ -251,7 +251,7 @@ class TestObterRegistros(TestUseColaboradores):
         self.batida_texto2 = self.batida[1].converter_em_texto(self.formato) 
         self.batida_texto3 = self.batida[5].converter_em_texto(self.formato)                
         self.batida_texto4 = self.batida[6].converter_em_texto(self.formato)                
-        
+        #self.formato_exportacao = FormatoExportacao(nome='TestN', formato=self.formato)    
     
     
     def test_converter(self):        
@@ -272,20 +272,21 @@ class TestObterRegistros(TestUseColaboradores):
         texto = self.batida[5].converter_em_texto(formato_com_pis)                
         self.assertTrue('1810161200xxx000034644028941' in texto)
         
-        
+    
          
     def test_obter(self):
-        '''self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016',
+        '''
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016',
                                                                     'fim': '19/10/2016', 
-                                                                    'formato': PadraoExportacao.objects.get(id=1)
+                                                                    'formato': 'default',
                                                                     })
-        #self.assertEqual(200, self.response.status_code)   
-        #self.assertTrue('Content-Disposition' in self.response) 
-        #self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
-     
-        #self.assertContains(self.response, self.batida_texto1 )
-        #self.assertContains(self.response, self.batida_texto2 )
-        #self.assertContains(self.response, self.batida_texto3 )'''
+        self.assertEqual(200, self.response.status_code)   
+        self.assertTrue('Content-Disposition' in self.response) 
+        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        self.assertContains(self.response, self.batida_texto1 )
+        self.assertContains(self.response, self.batida_texto2 )
+        self.assertContains(self.response, self.batida_texto3 )
+		'''
         pass
         
         
