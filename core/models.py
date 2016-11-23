@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 from django.db import models
 from pyRelogioPonto.relogioponto.base import get_rep_suportados
-from collections import OrderedDict
 from core.util import somente_numeros
 
 

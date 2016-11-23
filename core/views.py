@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from django.shortcuts import render
-from core.forms import GerarArquivoForm, ColaboradorForm, ColaboradorFormSet
+from core.forms import GerarArquivoForm,  ColaboradorFormSet
 from django.contrib.auth import logout
 from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
 from core.models import Colaborador, Matricula
-from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory
-from pprint import pprint
 from pyRelogioPonto.relogioponto import util
+from django.utils.translation import ugettext_lazy as _
 
 
 def site_logout(request):
@@ -37,7 +35,7 @@ def gerar_arquivo(request):
         response = HttpResponse('', content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
-        response = HttpResponseForbidden('Requisição inválida.')
+        response = HttpResponseForbidden(_('Requisição inválida.'))
     return response
 
 

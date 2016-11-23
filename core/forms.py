@@ -5,7 +5,7 @@ from django.forms import widgets
 from core.models import Colaborador, Matricula
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
-
+from django.utils.translation import ugettext_lazy as _
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -15,7 +15,7 @@ class LoginForm(forms.Form):
 class GerarArquivoForm(forms.Form):
     inicio = forms.DateField()
     fim = forms.DateField()
-    formato = forms.ChoiceField(choices=[('default','Formato padrão')], label='Formato')
+    formato = forms.ChoiceField(choices=[('default',_('Formato padrão'))], label='Formato')
     @property
     def nome_arquivo(self):
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))

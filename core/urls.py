@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 from django.conf.urls import url
 from django.utils.translation import ugettext_lazy as _
-import core
 from core import views
 from django.contrib import admin
 
