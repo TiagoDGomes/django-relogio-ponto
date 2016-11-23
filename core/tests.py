@@ -8,6 +8,7 @@ from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
 from settings import BASE_DIR
 import os
 from datetime import datetime
+import settings
 
 ''''
 TOTAL_SUBMITS = 3
@@ -176,7 +177,8 @@ class TestPaginaColaborador(TestUseColaboradores):
         self.assertContains(self.response, text="<input ",  count=numero_inputs)          
         
         self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
-        self.assertContains(self.response, text='name="arquivo_csv"')        
+        self.assertContains(self.response, text='name="arquivo_csv"') 
+               
         
     def test_gravacao(self):
         self.assertEqual(len(self.colaboradores), (Colaborador.objects.count()), msg='Quantidade invalida de colaboradores registrados')
@@ -327,15 +329,53 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
         self.assertContains(self.response_get2, text='777333', count=1)
         
 
+class TestUseImportacao(TestUseParaUsuarioLogado):  
+    def setUp(self):
+        TestUseParaUsuarioLogado.setUp(self)  
+        self.total = 0
+        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as f:                      
+            self.total = len(str(f.read()).encode('utf-8').split('\n'))
+        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:  
+            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})                          
+                    
+class TestCaseImportarArquivoCSV(TestUseImportacao):    
+    def test_submit(self):        
+        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), self.total)
+
+class TestCasePaginacaoColaboradores(TestUseImportacao):
+    def setUp(self):
+        TestUseImportacao.setUp(self)
+        self.colaboradores = Colaborador.objects.all()
         
-class TestCaseImportarArquivoCSV(TestUseParaUsuarioLogado):
+
+    def test_primeira_pagina(self):
+        count = 0
+        self.response = self.client.get(reverse('colaboradores'))
+        self.assertContains(self.response, 'class="pagination')
+        
+        for colaborador in self.colaboradores:
+            count+=1
+            if count <= settings.TOTAL_PAGINACAO:
+                self.assertContains(self.response, colaborador.nome)
+            else:
+                self.assertNotContains(self.response, colaborador.nome)
+        
+
+    def test_segunda_pagina(self):
+        count = 0
+        self.response = self.client.get(reverse('colaboradores') + '?page=2')
+        for colaborador in self.colaboradores:
+            count+=1
+            
+            if count <= settings.TOTAL_PAGINACAO:
+                self.assertNotContains(self.response, colaborador.nome)
+            else:
+                self.assertContains(self.response, colaborador.nome)
+        
 
     
-    def test_submit(self):
-        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:
-            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})              
-        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), 3)
 
  
-            
+
+                
 

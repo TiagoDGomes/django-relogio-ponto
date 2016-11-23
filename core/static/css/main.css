@@ -18,6 +18,10 @@
 .table.colaboradores textarea{
 	height: 3.4em;
 }
-.barra-rodape, .barra-colaboradores * {
-	text-align: right
+.barra-rodape, .barra-colaboradores  {
+	text-align: right;
+	margin-bottom: 1em;
+}
+.paginacao{
+	text-align: center
 }

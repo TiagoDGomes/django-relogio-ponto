@@ -100,6 +100,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_URL = '/admin/login/'
 
+import sys
+reload(sys)
+exec "sys.setdefaultencoding('utf8')"
 
-
-
+TOTAL_PAGINACAO = 10

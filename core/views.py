@@ -10,6 +10,8 @@ from django.urls.base import reverse
 from core.models import Colaborador, Matricula
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+import settings
 
 
 def site_logout(request):
@@ -24,7 +26,22 @@ def index(request):
 
 @login_required
 def colaboradores(request): 
-    form_colaboradores = ColaboradorFormSet()
+    query = Colaborador.objects.all()
+    paginator = Paginator(query, settings.TOTAL_PAGINACAO)
+    page = request.GET.get('page')
+    try:
+        objects = paginator.page(page)
+        pagina_atual = int(page)
+    except PageNotAnInteger:        
+        objects = paginator.page(1)
+        pagina_atual = 1
+    except EmptyPage:
+        objects = paginator.page(paginator.num_pages)
+        pagina_atual = paginator.num_pages
+    page_query = query.filter(id__in=[object.id for object in objects])
+    form_colaboradores = ColaboradorFormSet(queryset=page_query)    
+    paginas_range = range(1, objects.paginator.num_pages+1)
+   
     return render(request, 'colaboradores.html', locals())
 
 

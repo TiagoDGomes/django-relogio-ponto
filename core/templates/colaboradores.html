@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block conteudo %}
 <h3>Colaboradores</h3>
-<form action="{% url 'salvar_colaboradores' %}" method="post">
+<form action="{% url 'salvar_colaboradores' %}" method="post" id="form-colaboradores">
 
 	{% csrf_token %} 
 	
@@ -10,6 +10,11 @@
 	
 	<div class="panel panel-default">
 		<div class="panel-body">
+			<div class="barra-colaboradores">
+				<div class="btn-group">
+					<input class="btn btn-primary" type="submit" value="Salvar">
+				</div>
+			</div>
 			<table class="table colaboradores" id="tabela_funcionarios">
 				<thead>
 					<tr>
@@ -35,10 +40,13 @@
 					{% endfor %}
 				</tbody>
 			</table>
-			<div class="btn-group barra-colaboradores">
-				<div class="btn-group">
-					<input class="btn btn-primary" type="submit" value="Salvar">
-				</div>
+			
+			<div class="paginacao">			
+				<ul class="pagination">
+					{% for p in paginas_range %}					
+			            <li class="{% if p == pagina_atual %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
+			        {% endfor %}
+				</ul>			
 			</div>
 		</div>
 	</div>

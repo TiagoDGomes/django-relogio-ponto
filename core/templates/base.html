@@ -28,9 +28,9 @@
 			console.log()
 		</script>	
 {% endblock  %}
-
+{% block breadcrumbs %}{% endblock  %}
 {% block content %}
-	<div class="main">			
+	<div class="main container">			
 			<ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" id="tab-exportar" ><a href="{% url 'index' %}">Exportar</a></li>
 				<li role="presentation" id="tab-colaboradores"><a href="{% url 'colaboradores' %}">Colaboradores</a></li>
