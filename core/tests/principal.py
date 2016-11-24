@@ -1,61 +1,23 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.urls.base import  reverse
 from django.contrib import auth
-from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
-from settings import BASE_DIR
-import os
+from core.models import Colaborador, RelogioPonto, RegistroPonto
 from datetime import datetime
 import settings
-
-''''
-TOTAL_SUBMITS = 3
-TOTAL_INPUT_TEXT_FIXOS = 2
-TOTAL_INPUT_FILE_FIXOS = 1
-TOTAL_INPUT_CHECKBOX = 1
-TOTAL_CSRFTOKEN = 3
-NUMERO_INPUTS_TABELACOLABORADOR = 3
-TOTAL_MANAGEMENTFORM = 1
-TOTAL_INPUTS_FIXOS = TOTAL_MANAGEMENTFORM*4 + TOTAL_SUBMITS + TOTAL_INPUT_TEXT_FIXOS +  TOTAL_INPUT_FILE_FIXOS +  TOTAL_INPUT_CHECKBOX +  TOTAL_CSRFTOKEN
-'''
-
-class TestUseParaCriarUsuarioLogado(TestCase):   
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='1234qwer')
-        self.logged_in = self.client.login(username='testuser', password='1234qwer')
-
-
-
-class TestUseParaCriarUsuarioAdminLogado(TestUseParaCriarUsuarioLogado):
-    def setUp(self):
-        TestUseParaCriarUsuarioLogado.setUp(self)
-        self.user.is_staff = True
-        self.user.is_superuser = True
-        self.user.save()
-    
-
-
-class TestUseParaUsuarioLogado(TestUseParaCriarUsuarioLogado):   
-    def setUp(self):        
-        super(TestUseParaUsuarioLogado, self).setUp()
-        self.response = self.client.get('/')
-        
+from core.tests import prepare
         
         
 class TestPaginaInicialSemAutenticar(TestCase):
-
     def setUp(self):
         self.response = self.client.get('/') 
 
     def test_302(self):
-        self.assertEqual(302, self.response.status_code)        
+        self.assertEqual(302, self.response.status_code) 
         
         
-        
-class TestPaginaPrincipal(TestUseParaUsuarioLogado):
-    
+class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):    
     def test_formulario(self):   
         self.assertContains(self.response, text='csrfmiddlewaretoken', )  
         self.assertContains(self.response, text='type="submit"',)        
@@ -70,8 +32,7 @@ class TestPaginaPrincipal(TestUseParaUsuarioLogado):
     
 
         
-class TestLogout(TestUseParaUsuarioLogado):
-    
+class TestLogout(prepare.PrepararParaTerUsuarioLogado):    
     def test_logout(self):
         self.response = self.client.get(reverse('site_logout'))   
         self.assertEqual(302, self.response.status_code)
@@ -84,8 +45,7 @@ class TestLogout(TestUseParaUsuarioLogado):
 
             
         
-class TestRelogioAddAdmin(TestUseParaCriarUsuarioAdminLogado):
-    
+class TestRelogioAddAdmin(prepare.PrepararParaCriarUsuarioAdminLogado):    
     def setUp(self):
         super(TestRelogioAddAdmin, self).setUp()
         self.response = self.client.get(reverse('admin:core_relogioponto_add'))
@@ -93,76 +53,11 @@ class TestRelogioAddAdmin(TestUseParaCriarUsuarioAdminLogado):
     def test_remove_save_button(self):
         self.assertNotContains(self.response, text='name="_save"')  
         
-        
-             
-class TestUseColaboradores(TestUseParaUsuarioLogado): 
-    def setUp(self):    
-        
-        self.colaboradores = []
-        
-        
-        # Colaborador com 2 matrículas
-        colaborador = Colaborador()
-        colaborador.nome = 'Teste 1'
-        colaborador.pis = '700.85016.25-0'
-        colaborador.save()
-        self.matricula_antiga1 = '123456'
-        self.matricula_antiga2 = '789012'
-        
-        self.colaboradores.append(colaborador)    
-        matricula = Matricula()
-        matricula.numero = self.matricula_antiga1
-        matricula.colaborador = colaborador
-        matricula.save()
-        
-        matricula2 = Matricula()
-        matricula2.numero = self.matricula_antiga2
-        matricula2.colaborador = colaborador
-        matricula2.save()
-        
-        self.matriculas = []
-        self.matriculas.append(matricula)
-        self.matriculas.append(matricula2)
-        
-        # Colaborador sem matrícula   
-        colaborador = Colaborador()
-        colaborador.nome = 'Teste 2'
-        colaborador.pis = '346.44028.94-1'
-        colaborador.save()
-        
-        self.colaboradores.append(colaborador)
-        
-        
-        # Colaborador com uma matrícula
-        colaborador = Colaborador()
-        colaborador.nome = 'Teste 3'
-        colaborador.pis = '515.86503.41-7'
-        colaborador.save()
-        
-        matricula = Matricula()
-        matricula.numero = '747479'
-        matricula.colaborador = colaborador
-        matricula.save()
-        
-        
-        
-        self.colaboradores.append(colaborador)
-        
-        
-        
-        
-        super(TestUseColaboradores, self).setUp()    
-        self.response = self.client.get(reverse('colaboradores'))
+       
 
         
-        
-
-        
-class TestPaginaColaborador(TestUseColaboradores):
-    
-    
-    def test_formulario(self):  
-        
+class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):       
+    def test_formulario(self):          
         self.assertContains(self.response, text='csrfmiddlewaretoken',)  
         self.assertContains(self.response, text='type="submit"', count=2)        
         self.assertNotContains(self.response, text=reverse('gerar_arquivo'), )
@@ -195,8 +90,7 @@ class TestPaginaColaborador(TestUseColaboradores):
         
   
       
-class TestObterRegistros(TestUseColaboradores):
-    
+class TestObterRegistros(prepare.PrepararParaUsarColaboradores):    
     def setUp(self):
         super(TestObterRegistros, self).setUp()
         self.relogio = RelogioPonto.objects.create(nome='Teste',tipo=1)
@@ -296,7 +190,7 @@ class TestObterRegistros(TestUseColaboradores):
 
         
 
-class TestCaseColaboradoresPost(TestUseColaboradores):
+class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
     def test_alteracoes(self):
         self.pis_antigo = self.colaboradores[0].pis        
         self.novo_nome = 'TesteSalvar'
@@ -328,25 +222,17 @@ class TestCaseColaboradoresPost(TestUseColaboradores):
         self.assertContains(self.response_get2, text='666222', count=1)
         self.assertContains(self.response_get2, text='777333', count=1)
         
-
-class TestUseImportacao(TestUseParaUsuarioLogado):  
-    def setUp(self):
-        TestUseParaUsuarioLogado.setUp(self)  
-        self.total = 0
-        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as f:                      
-            self.total = len(str(f.read()).encode('utf-8').split('\n'))
-        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:  
-            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})                          
+                      
                     
-class TestCaseImportarArquivoCSV(TestUseImportacao):    
+class TestImportarArquivoCSV(prepare.PrepararParaImportacao):    
     def test_submit(self):        
         self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), self.total)
 
-class TestCasePaginacaoColaboradores(TestUseImportacao):
+
+class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
     def setUp(self):
-        TestUseImportacao.setUp(self)
-        self.colaboradores = Colaborador.objects.all()
-        
+        prepare.PrepararParaImportacao.setUp(self)
+        self.colaboradores = Colaborador.objects.all()        
 
     def test_primeira_pagina(self):
         count = 0
@@ -358,8 +244,7 @@ class TestCasePaginacaoColaboradores(TestUseImportacao):
             if count <= settings.TOTAL_PAGINACAO:
                 self.assertContains(self.response, colaborador.nome)
             else:
-                self.assertNotContains(self.response, colaborador.nome)
-        
+                self.assertNotContains(self.response, colaborador.nome)        
 
     def test_segunda_pagina(self):
         count = 0
