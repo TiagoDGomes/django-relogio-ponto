@@ -103,13 +103,14 @@ class TestPaginaColaboradorExportarParaRelogio(prepare.PrepararParaUsarColaborad
         self.response = self.client.get(reverse('colaboradores'))
         self.assertContains(self.response, text=self.relogio.nome) 
         
-    def test_exportar_para_relogio_post(self):
-        colaboradores_deletados = Colaborador.objects.filter(~Q(nome='Teste 1'))
-        colaboradores_deletados.delete()        
+    def test_exportar_para_relogio_post(self):      
         self.response = self.client.post(reverse('exportar_para_relogio'),  {'relogio': self.relogio.id})
-        for colaborador_sistema in models.Colaborador.objects.all():        
-            filtro = self.relogio_device.colaboradores.filter(pis=colaborador_sistema.pis)
-            self.assertNotEquals(filtro,[])
+        for colaborador_sistema in models.Colaborador.objects.all(): 
+            filtro = self.relogio_device.colaboradores.filter(pis=colaborador_sistema.pis)     
+            if colaborador_sistema.matriculas.all().count() == 0:  
+                self.assertEquals(filtro,[])
+            else:
+                self.assertNotEquals(filtro,[])
             
             
         

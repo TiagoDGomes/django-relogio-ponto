@@ -6,12 +6,11 @@ from core.models import Colaborador, Matricula, RelogioPonto
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
-from pprint import pprint
-from pyRelogioPonto.relogioponto.base import get_class_por_tipo,\
-    RelogioPontoException
+from pyRelogioPonto.relogioponto.base import RelogioPontoException
 from core import models
 from pyRelogioPonto import relogioponto
 import time
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -38,8 +37,7 @@ class ExportarParaRelogioForm(forms.Form):
             colaborador_rep = relogioponto.base.Colaborador(relogio_rep)
             colaborador_rep.nome = colaborador.nome
             colaborador_rep.pis = colaborador.pis
-            colaborador_rep.matriculas = (m['numero'] for m in colaborador.matriculas.values('numero') )
-            #print colaborador_rep
+            colaborador_rep.matriculas = (m['numero'] for m in colaborador.matriculas.values('numero') )            
             try:
                 colaborador_rep.save()
                 time.sleep(0.2)
@@ -65,7 +63,7 @@ class ColaboradorForm(forms.ModelForm):
             self.initial['matriculas'] = "\n".join ( str(m.numero) for m in colaborador.matriculas.all() ) 
  
     def save(self, *args, **kwargs):
-        super(ColaboradorForm, self).save(*args, **kwargs)
+        s = super(ColaboradorForm, self).save(*args, **kwargs)
         matriculas_post = self.cleaned_data['matriculas'].split('\n')        
 
         self.instance.matriculas.all().delete()
@@ -78,7 +76,12 @@ class ColaboradorForm(forms.ModelForm):
                 #matricula.colaborador.save()
                
                 matricula.save()
- 
+        return s     
+    
+    def clean(self, *args, **kwargs):
+        print self.instance
+        
+                
 ColaboradorFormSet = modelformset_factory(Colaborador, 
                                          form=ColaboradorForm, 
                                          extra=1, 

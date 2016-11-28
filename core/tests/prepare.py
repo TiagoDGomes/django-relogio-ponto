@@ -131,4 +131,5 @@ class PrepararRelogio(TestCase):
         self.relogio_device = self.relogio.get_rep()
         self.relogio_device.conectar()
         
-
+    def tearDown(self):        
+        self.relogio_device.desconectar()    
