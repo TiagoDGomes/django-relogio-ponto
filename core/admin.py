@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.contrib import admin
 from core.models import RelogioPonto, Colaborador, Parametro, Matricula
+from core.forms import ColaboradorForm
 
 class ParametroInline(admin.StackedInline):
     model = Parametro
@@ -32,4 +33,5 @@ class MatriculaInline(admin.StackedInline):
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
-    inlines = [MatriculaInline,]
+    #inlines = [MatriculaInline,]
+    form = ColaboradorForm
