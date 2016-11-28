@@ -56,7 +56,7 @@
 </form>
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h4>Importar</h4>
+		<h4>Importar de arquivo</h4>
 	</div>
 	<div class="panel-body">
 		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
@@ -68,6 +68,25 @@
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h4>Exportar para relógio</h4>
+	</div>
+	<div class="panel-body">
+		<form action="{% url 'exportar_para_relogio' %}" method="post">
+			<div class="row">
+				<div class="col-sm-4">Exportar todos os usuários para relógio:</div>
+				<div class="col-sm-6">
+					{% csrf_token %} 
+					{{ form_exportar_para_relogio.relogio }}
+				</div>
+				<div class="col-sm-2">
+					<input type="submit" value="Exportar" class="btn btn-primary">
 				</div>
 			</div>
 		</form>

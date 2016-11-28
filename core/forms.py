@@ -2,10 +2,16 @@
 from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
-from core.models import Colaborador, Matricula
+from core.models import Colaborador, Matricula, RelogioPonto
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
+from pprint import pprint
+from pyRelogioPonto.relogioponto.base import get_class_por_tipo,\
+    RelogioPontoException
+from core import models
+from pyRelogioPonto import relogioponto
+import time
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -19,7 +25,31 @@ class GerarArquivoForm(forms.Form):
     @property
     def nome_arquivo(self):
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
+
+
+class ExportarParaRelogioForm(forms.Form):
+    relogio = forms.ModelChoiceField(RelogioPonto.objects)
     
+    def exportar(self, *args, **kwargs):
+        relogio_banco =  self.cleaned_data['relogio']
+        relogio_rep = relogio_banco.get_rep()
+        relogio_rep.conectar()
+        for colaborador in models.Colaborador.objects.all():
+            colaborador_rep = relogioponto.base.Colaborador(relogio_rep)
+            colaborador_rep.nome = colaborador.nome
+            colaborador_rep.pis = colaborador.pis
+            colaborador_rep.matriculas = (m['numero'] for m in colaborador.matriculas.values('numero') )
+            #print colaborador_rep
+            try:
+                colaborador_rep.save()
+                time.sleep(0.2)
+            except RelogioPontoException as e:
+                if not 'cadastrado para outro' in e.message:                    
+                    raise e 
+            
+        
+            
+
 
 class ColaboradorForm(forms.ModelForm):
     matriculas = forms.CharField(widget=Textarea(attrs={'rows':1, 'cols':6,}), required=False)

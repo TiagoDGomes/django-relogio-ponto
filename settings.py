@@ -105,3 +105,14 @@ reload(sys)
 exec "sys.setdefaultencoding('utf8')"
 
 TOTAL_PAGINACAO = 10
+
+
+
+
+TEST_RELOGIO_PONTO_TIPO = config('TEST_RELOGIO_PONTO_TIPO',default=0, cast=int)
+TEST_RELOGIO_PONTO_ENDERECO = config('TEST_RELOGIO_PONTO_ENDERECO', default=None)
+TEST_RELOGIO_PONTO_PORTA = config('TEST_RELOGIO_PONTO_PORTA', default=0, cast=int)
+
+
+
+

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from django.test import TestCase
-from core.models import Colaborador, Matricula
+from core.models import Colaborador, Matricula, RelogioPonto
 from django.contrib.auth.models import User
 from django.urls.base import reverse
 from settings import BASE_DIR
 import os
+import settings
+from pyRelogioPonto import relogioponto
+from core import models
+from django.db.models.aggregates import Count
 
 class PrepararParaCriarUsuarioLogado(TestCase):   
     def setUp(self):
@@ -99,4 +103,32 @@ class PrepararParaImportacao(PrepararParaTerUsuarioLogado):
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:  
             self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})     
 
+
+class PrepararRelogio(TestCase):
+    def setUp(self):        
+        if not settings.TEST_RELOGIO_PONTO_ENDERECO:
+            raise Exception('Não há endereço definido para TEST_RELOGIO_PONTO_ENDERECO em settings')
+        if settings.TEST_RELOGIO_PONTO_TIPO == 0:
+            raise Exception('Não é possível fazer testes com o relógio de ponto definido em settings.')
+        
+        self.relogio = models.RelogioPonto()
+        self.relogio.nome = 'Teste de relogio'        
+        self.relogio.tipo, self.relogio_nome, self.RelogioPontoTipo, param = relogioponto.base.get_rep_suportados()[0]
+        self.relogio.save() 
+        
+        parametro = self.relogio.parametros.get(propriedade='endereco') 
+        parametro.valor = settings.TEST_RELOGIO_PONTO_ENDERECO
+        parametro.save()
+        
+        parametro = self.relogio.parametros.get(propriedade='porta') 
+        if settings.TEST_RELOGIO_PONTO_PORTA:            
+            parametro.valor = settings.TEST_RELOGIO_PONTO_PORTA
+            parametro.save()
+        else:
+            parametro.delete()
+            
+            
+        self.relogio_device = self.relogio.get_rep()
+        self.relogio_device.conectar()
+        
 

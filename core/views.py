@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from django.shortcuts import render
-from core.forms import GerarArquivoForm,  ColaboradorFormSet
+from core.forms import GerarArquivoForm,  ColaboradorFormSet,\
+    ExportarParaRelogioForm
 from django.contrib.auth import logout
 from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-from core.models import Colaborador, Matricula
+from core.models import Colaborador, Matricula, RelogioPonto
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -41,7 +42,9 @@ def colaboradores(request):
     page_query = query.filter(id__in=[object.id for object in objects])
     form_colaboradores = ColaboradorFormSet(queryset=page_query)    
     paginas_range = range(1, objects.paginator.num_pages+1)
-   
+    
+    form_exportar_para_relogio = ExportarParaRelogioForm()
+    
     return render(request, 'colaboradores.html', locals())
 
 
@@ -90,4 +93,12 @@ def handle_uploaded_file(rf):
         chunk_decode = util.remover_acentos(chunk.decode('utf-8'))                   
         content ='{0}{1}'.format(content, chunk_decode)
     return content
+
+def exportar_para_relogio(request):
+    form_exportar_para_relogio = ExportarParaRelogioForm(request.POST)
+    if form_exportar_para_relogio.is_valid():
+        form_exportar_para_relogio.exportar()        
+        return HttpResponse('ok')
+    else:
+        return colaboradores(request) 
             

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
-from pyRelogioPonto.relogioponto.base import get_rep_suportados
+from pyRelogioPonto.relogioponto.base import get_rep_suportados,\
+    get_class_por_tipo
 from core.util import somente_numeros
 
 
@@ -34,7 +35,7 @@ class RelogioPonto(models.Model):
     CHOICES_TIPOS_RELOGIOS = [(id, nome) for id, nome, tipo, parametros in get_rep_suportados()]  
     nome = models.CharField(max_length=30)
     tipo = models.IntegerField(choices=CHOICES_TIPOS_RELOGIOS)
-    
+    _rep = None
 
     
     class Meta:
@@ -61,7 +62,22 @@ class RelogioPonto(models.Model):
                         parametro.save()  
         return s
     
-      
+    def get_rep(self):
+        if not self._rep: # se não foi definido            
+            for id, nome, Tipo, parametros in get_rep_suportados():
+                if self.tipo == id: # se mesmo modelo
+                    plist = []                     
+                    for propriedade, tipo_valor in parametros:
+                        for parametro_local in self.parametros.all():
+                            if parametro_local.propriedade == propriedade: 
+                                if tipo_valor == int :
+                                    plist.append(propriedade + '=' + parametro_local.valor)
+                                else:    
+                                    plist.append(propriedade + '="' + parametro_local.valor + '"')
+                    cmd = 'self._rep = Tipo(%s)' % ",".join(plist)
+                    print cmd
+                    exec cmd
+        return self._rep 
 
 
 class Parametro(models.Model):
@@ -75,6 +91,7 @@ class Parametro(models.Model):
 
     class Meta:
         verbose_name = 'parâmetro'  
+        unique_together = (('relogio','propriedade'),)
         
          
 

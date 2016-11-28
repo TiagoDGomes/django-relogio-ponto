@@ -7,6 +7,8 @@ from core.models import Colaborador, RelogioPonto, RegistroPonto
 from datetime import datetime
 import settings
 from core.tests import prepare
+from core import models
+from django.db.models import Q
         
         
 class TestPaginaInicialSemAutenticar(TestCase):
@@ -59,20 +61,25 @@ class TestRelogioAddAdmin(prepare.PrepararParaCriarUsuarioAdminLogado):
 class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):       
     def test_formulario(self):          
         self.assertContains(self.response, text='csrfmiddlewaretoken',)  
-        self.assertContains(self.response, text='type="submit"', count=2)        
+        self.assertContains(self.response, text='type="submit"', count=3) # salvar, importar CSV e exportar para relógio        
+        self.assertContains(self.response, text='<form', count=3)        
         self.assertNotContains(self.response, text=reverse('gerar_arquivo'), )
         self.assertContains(self.response, text=reverse('site_logout'), )
         self.assertContains(self.response, text='type="file"', )
         
         NUMERO_INPUTS_TABELACOLABORADOR = 3
         
-        TOTAL_INPUTS_FIXOS = 9
+        
+        TOTAL_INPUTS_FIXOS = 4 + 5 + 2 
         self.assertContains(self.response, 'id="tabela_funcionarios"')
         numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
         self.assertContains(self.response, text="<input ",  count=numero_inputs)          
         
         self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
+        self.assertContains(self.response, text=reverse('exportar_para_relogio'))
         self.assertContains(self.response, text='name="arquivo_csv"') 
+        self.assertContains(self.response, text='value="Exportar"') 
+        self.assertContains(self.response, text='<select') 
                
         
     def test_gravacao(self):
@@ -85,10 +92,28 @@ class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):
     def test_matriculas(self):    
         for matricula in self.matriculas:  
             self.assertContains(self.response, text=matricula.numero)
-           
-  
+            
+
+class TestPaginaColaboradorExportarParaRelogio(prepare.PrepararParaUsarColaboradores, prepare.PrepararRelogio): 
+    def setUp(self):
+        prepare.PrepararParaUsarColaboradores.setUp(self)  
+        prepare.PrepararRelogio.setUp(self)
+              
+    def test_relogio_listado(self):        
+        self.response = self.client.get(reverse('colaboradores'))
+        self.assertContains(self.response, text=self.relogio.nome) 
         
-  
+    def test_exportar_para_relogio_post(self):
+        colaboradores_deletados = Colaborador.objects.filter(~Q(nome='Teste 1'))
+        colaboradores_deletados.delete()        
+        self.response = self.client.post(reverse('exportar_para_relogio'),  {'relogio': self.relogio.id})
+        for colaborador_sistema in models.Colaborador.objects.all():        
+            filtro = self.relogio_device.colaboradores.filter(pis=colaborador_sistema.pis)
+            self.assertNotEquals(filtro,[])
+            
+            
+        
+       
       
 class TestObterRegistros(prepare.PrepararParaUsarColaboradores):    
     def setUp(self):
@@ -256,9 +281,20 @@ class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
                 self.assertNotContains(self.response, colaborador.nome)
             else:
                 self.assertContains(self.response, colaborador.nome)
-        
+                
 
     
+                
+        
+class TestBatidasDoRelogio(prepare.PrepararRelogio):
+
+        
+    def test_batidas(self):
+        #registros = self.relogio.get_registros()
+        #for registro in registros:
+        #    print registro
+        pass
+
 
  
 
