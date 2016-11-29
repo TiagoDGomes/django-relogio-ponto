@@ -13,6 +13,7 @@ from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import settings
+from brazilnum.pis import validate_pis
 
 
 def site_logout(request):
@@ -40,10 +41,14 @@ def colaboradores(request):
         objects = paginator.page(paginator.num_pages)
         pagina_atual = paginator.num_pages
     page_query = query.filter(id__in=[object.id for object in objects])
-    form_colaboradores = ColaboradorFormSet(queryset=page_query)    
+    if request.POST:
+        form_colaboradores = ColaboradorFormSet(request.POST, queryset=page_query, )    
+        form_exportar_para_relogio = ExportarParaRelogioForm(request.POST)
+    else:
+        form_colaboradores = ColaboradorFormSet(queryset=page_query)    
+        form_exportar_para_relogio = ExportarParaRelogioForm()
+        
     paginas_range = range(1, objects.paginator.num_pages+1)
-    
-    form_exportar_para_relogio = ExportarParaRelogioForm()
     
     return render(request, 'colaboradores.html', locals())
 
@@ -64,27 +69,48 @@ def salvar_colaboradores(request):
     form_colaboradores = ColaboradorFormSet(request.POST)
     if form_colaboradores.is_valid():
         form_colaboradores.save()
+    else:
+        return colaboradores(request)
     return HttpResponseRedirect(reverse('colaboradores'))
 
 @login_required
-def importar_arquivo_csv(request):    
-    for linha in handle_uploaded_file(request.FILES['arquivo_csv']).split('\n'):
+def importar_arquivo_csv(request):
+    colaboradores_incluidos = [] 
+    linhas_ignoradas = []  
+    file_string = handle_uploaded_file(request.FILES['arquivo_csv']) 
+    if ',' in file_string:
+        separador = ','
+    elif '\t' in file_string:
+        separador = '\t'
+    else:
+        separador = ';'
+    for linha in file_string.split('\n'):
         if linha:
-            celulas = linha.split(',')
-            colaborador = Colaborador.objects.get_or_create(pis=int(celulas[1]))[0]
-            colaborador.nome = celulas[0]
-            colaborador.save()
-            if celulas[2].strip():
-                try:
-                    matricula = Matricula.objects.get(numero=int(celulas[2]))
-                except:                    
-                    matricula = Matricula()
-                    matricula.numero = int(celulas[2])
+            celulas = linha.split(separador)
+            try:
+                pis = celulas[1]
+            except IndexError:
+                pis = ''            
+            if not validate_pis(pis):
                 
-                matricula.colaborador = colaborador
-                matricula.save()
-            colaborador.save()
-    return HttpResponseRedirect(reverse('index'))
+                linhas_ignoradas.append(linha)
+            else:    
+                colaborador = Colaborador.objects.get_or_create(pis=pis)[0]
+                colaborador.nome = celulas[0]
+                colaborador.save()
+                matricula_numero = celulas[2].strip()
+                if matricula_numero:
+                    try:
+                        matricula = Matricula.objects.get(numero=int(matricula_numero))
+                    except:                    
+                        matricula = Matricula()
+                        matricula.numero = int(matricula_numero)                
+                    matricula.colaborador = colaborador
+                    matricula.save()
+                colaborador.save()
+                
+            
+    return render(request, 'return_importacao.html', locals())
 
 
 def handle_uploaded_file(rf):

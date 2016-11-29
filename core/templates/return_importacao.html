@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<h3>Resultado da importação</h3>
+
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h4>Resultado da importação</h4>
+	</div>
+	<div class="panel-body">
+		<p>Total de colaboradores analisados: {{ total }}</p>
+		<h5>Colaboradores incluídos: </h5>
+		<ul>
+		{% for colaborador_incluido in colaboradores_incluidos %}
+			<li>{{ colaborador }}</li>
+		{% empty %}
+			<li>Nenhum colaborador incluído.</li>
+		{% endfor %}
+		</ul>
+		<h5>Linhas ignoradas por erro: </h5>
+		<ul>
+		{% for linha in linhas_ignoradas %}
+			<li>{{ linha }}</li>
+		{% empty %}
+			<li>Nenhuma linha ignorada.</li>
+		{% endfor %}
+		</ul>
+		
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h4>Importar de arquivo</h4>
+	</div>
+	<div class="panel-body">
+		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
+			<div class="row">
+				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
+				<div class="col-sm-6">
+					{% csrf_token %} 
+					<input name="arquivo_csv" type="file" class="btn">
+				</div>
+				<div class="col-sm-2">
+					<input type="submit" value="Importar" class="btn btn-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock conteudo %}
