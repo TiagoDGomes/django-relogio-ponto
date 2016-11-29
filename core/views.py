@@ -8,7 +8,7 @@ from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-from core.models import Colaborador, Matricula, RelogioPonto
+from core.models import Colaborador, Matricula
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -40,7 +40,7 @@ def colaboradores(request):
     except EmptyPage:
         objects = paginator.page(paginator.num_pages)
         pagina_atual = paginator.num_pages
-    page_query = query.filter(id__in=[object.id for object in objects])
+    page_query = query.filter(id__in=[obj.id for obj in objects])
     if request.POST:
         form_colaboradores = ColaboradorFormSet(request.POST, queryset=page_query, )    
         form_exportar_para_relogio = ExportarParaRelogioForm(request.POST)

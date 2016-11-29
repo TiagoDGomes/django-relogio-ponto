@@ -47,24 +47,22 @@ class RelogioPonto(models.Model):
     def save(self, *args, **kwargs):
         nao_salvo = False
         if not self.id:
-            nao_salvo = True
-        print 'salvando ', self.id
+            nao_salvo = True        
         s = super(RelogioPonto, self).save(*args, **kwargs)
         if nao_salvo:
-            for id_, nome, tipo, parametros in get_rep_suportados():
+            for id_, _, __, parametros in get_rep_suportados():
                 if self.tipo == id_:
                     for propriedade, tipo_valor in parametros:
                         parametro = Parametro()
                         parametro.propriedade =  propriedade
                         parametro.tipo = tipo_valor
                         parametro.relogio = self
-                        parametro.save()  
-                        print parametro
+                        parametro.save()
         return s
     
     def get_rep(self):
         if not self._rep: # se não foi definido            
-            for id_, nome, Tipo, parametros in get_rep_suportados():
+            for id_, _, Tipo, parametros in get_rep_suportados():
                 if self.tipo == id_: # se mesmo modelo
                     plist = []                     
                     for propriedade, tipo_valor in parametros:

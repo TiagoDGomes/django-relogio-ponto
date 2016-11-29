@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from django.test import TestCase
-from core.models import Colaborador, Matricula, RelogioPonto
+from core.models import Colaborador, Matricula
 from django.contrib.auth.models import User
 from django.urls.base import reverse
 from settings import BASE_DIR
@@ -9,7 +9,8 @@ import os
 import settings
 from pyRelogioPonto import relogioponto
 from core import models
-from django.db.models.aggregates import Count
+
+
 
 class PrepararParaCriarUsuarioLogado(TestCase):   
     def setUp(self):
@@ -123,7 +124,7 @@ class PrepararRelogio(TestCase):
         
         self.relogio = models.RelogioPonto()
         self.relogio.nome = 'Teste de relogio'        
-        self.relogio.tipo, self.relogio_nome, self.RelogioPontoTipo, param = relogioponto.base.get_rep_suportados()[0]
+        self.relogio.tipo, self.relogio_nome, self.RelogioPontoTipo, _ = relogioponto.base.get_rep_suportados()[0]
         self.relogio.save() 
         
         parametro = self.relogio.parametros.get(propriedade='endereco') 
