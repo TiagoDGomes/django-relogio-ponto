@@ -10,6 +10,9 @@ from pyRelogioPonto.relogioponto.base import RelogioPontoException
 from core import models
 from pyRelogioPonto import relogioponto
 import time
+from brazilnum.pis import validate_pis
+from django.core.exceptions import ValidationError
+from core.util import somente_numeros
 
 
 class LoginForm(forms.Form):
@@ -58,7 +61,7 @@ class ColaboradorForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(ColaboradorForm, self).__init__(*args, **kwargs)
-        if 'instance' in kwargs:
+        if 'instance' in kwargs and kwargs['instance'] is not None:
             colaborador = kwargs['instance']
             self.initial['matriculas'] = "\n".join ( str(m.numero) for m in colaborador.matriculas.all() ) 
  
@@ -71,16 +74,23 @@ class ColaboradorForm(forms.ModelForm):
         for numero_a_salvar in matriculas_post:
             if numero_a_salvar:
                 matricula = Matricula()
-                matricula.numero = numero_a_salvar
+                matricula.numero = int(numero_a_salvar)
                 matricula.colaborador = self.instance
                 #matricula.colaborador.save()
                
                 matricula.save()
         return s     
     
-    def clean(self, *args, **kwargs):
-        print self.instance
+    def clean_pis(self, *args, **kwargs):
+        pis = (somente_numeros(self.cleaned_data['pis']))        
+        valido = validate_pis(pis)               
+        if not valido:            
+            raise forms.ValidationError ("PIS inválido")
+        else:    
+            return int(pis)
         
+    
+    
                 
 ColaboradorFormSet = modelformset_factory(Colaborador, 
                                          form=ColaboradorForm, 

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
-from pyRelogioPonto.relogioponto.base import get_rep_suportados,\
-    get_class_por_tipo
+from pyRelogioPonto.relogioponto.base import get_rep_suportados
 from core.util import somente_numeros
 
 
@@ -52,7 +51,7 @@ class RelogioPonto(models.Model):
         
         s = super(RelogioPonto, self).save(*args, **kwargs)
         if nao_salvo:
-            for id, nome, tipo, parametros in get_rep_suportados():
+            for uid, nome, tipo, parametros in get_rep_suportados():
                 if self.tipo == id:
                     for propriedade, tipo_valor in parametros:
                         parametro = Parametro()
@@ -64,7 +63,7 @@ class RelogioPonto(models.Model):
     
     def get_rep(self):
         if not self._rep: # se não foi definido            
-            for id, nome, Tipo, parametros in get_rep_suportados():
+            for uid, nome, Tipo, parametros in get_rep_suportados():
                 if self.tipo == id: # se mesmo modelo
                     plist = []                     
                     for propriedade, tipo_valor in parametros:

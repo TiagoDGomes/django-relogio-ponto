@@ -98,10 +98,20 @@ class PrepararParaImportacao(PrepararParaTerUsuarioLogado):
     def setUp(self):
         PrepararParaTerUsuarioLogado.setUp(self)  
         self.total = 0
-        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as f:                      
-            self.total = len(str(f.read()).encode('utf-8').split('\n'))
+        with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as f:
+            lines = (str(f.read()).encode('utf-8')).split('\n')
+            self.total = len(lines)
+            self.total_validos = 0
+            self.total_invalidos = 0
+            
+            for line in lines:
+                if 'INVALIDO' in line:
+                    self.total_invalidos += 1
+                else:
+                    self.total_validos += 1
+             
         with open(os.path.join(BASE_DIR, 'exemplo_colaboradores.csv')) as csv_file:  
-            self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})     
+            self.response = self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file})     
 
 
 class PrepararRelogio(TestCase):

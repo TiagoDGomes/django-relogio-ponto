@@ -213,13 +213,31 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
         
         
         
-
-        
+class TestColaboradorInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):
+    def test_pis_invalido(self):        
+        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
+                                                           'form-TOTAL_FORMS': 1,
+                                                           'form-INITIAL_FORMS': 0,
+                                                           'form-MIN_NUM_FORMS': 0,
+                                                           'form-MAX_NUM_FORMS': 1000,
+                                                          # 'form-0-id': '', 
+                                                           'form-0-nome': 'Teste', 
+                                                           'form-0-pis': '0101', 
+                                                           'form-0-matriculas': '666222\n777333',
+                                                        }) 
+        self.assertContains(self.response_post, 'PIS inválido')
 
 class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
+    
+
+           
+        
+        
+    
     def test_alteracoes(self):
         self.pis_antigo = self.colaboradores[0].pis        
         self.novo_nome = 'TesteSalvar'
+        pis = '50750683739'
         self.response_post = self.client.post(reverse('salvar_colaboradores'), {
                                                            'form-TOTAL_FORMS': 2,
                                                            'form-INITIAL_FORMS': 1,
@@ -227,18 +245,18 @@ class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
                                                            'form-MAX_NUM_FORMS': 1000,
                                                            'form-0-id': self.colaboradores[0].id, 
                                                            'form-0-nome': self.novo_nome, 
-                                                           'form-0-pis': '4441234444', 
+                                                           'form-0-pis': pis, 
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
            
         self.assertRedirects(self.response_post, expected_url=reverse('colaboradores'))
         self.response_get2 = self.client.get(reverse('colaboradores'))
         self.assertNotContains(self.response_get2, self.pis_antigo)
-        self.assertContains(self.response_get2, '4441234444')
+        self.assertContains(self.response_get2, pis)
         
     
         
-        colaborador_salvo = Colaborador.objects.get(pis='4441234444')
+        colaborador_salvo = Colaborador.objects.get(pis=pis)
         self.assertEqual(colaborador_salvo.nome, 'TesteSalvar', 'Nome nao foi salvo')
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=666222).count(), 1)
         self.assertEquals(colaborador_salvo.matriculas.filter(numero=777333).count(), 1)
@@ -251,9 +269,11 @@ class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
                       
                     
 class TestImportarArquivoCSV(prepare.PrepararParaImportacao):    
-    def test_submit(self):        
-        self.assertEquals(Colaborador.objects.filter(nome__contains='CSV_').count(), self.total)
-
+    def test_resposta(self):        
+        self.assertEquals(Colaborador.objects.filter(nome__contains=' VALIDO').count(), self.total_validos)
+        self.assertEquals(Colaborador.objects.filter(nome__contains='INVALIDO').count(), 0)
+        self.assertContains(self.response,'INVALIDO', count=self.total_invalidos)
+        
 
 class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
     def setUp(self):
