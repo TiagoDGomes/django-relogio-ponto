@@ -3,3 +3,4 @@ python-decouple
 mechanize
 BeautifulSoup
 cachetools
+brazilnum
