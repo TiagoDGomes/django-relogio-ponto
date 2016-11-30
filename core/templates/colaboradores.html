@@ -1,60 +1,69 @@
 {% extends 'base.html' %}
 {% block conteudo %}
-<h3>Colaboradores</h3>
-<form action="{% url 'salvar_colaboradores' %}" method="post" id="form-colaboradores">
-
-	{% csrf_token %} 
-	
-	{{ form_colaboradores.management_form }}
-	
-	
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="barra-colaboradores">
-				<div class="btn-group">
-					<input class="btn btn-primary" type="submit" value="Salvar">
-				</div>
-			</div>
-			<table class="table colaboradores" id="tabela_funcionarios">
-				<thead>
-					<tr>
-						<th>Nome</th>
-						<th>PIS</th>
-						<th>Matrículas</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for colaborador in form_colaboradores %}					
-					<tr class="{%if colaborador.id.value %}old-item{% else %}new-item{%endif%}">
-						<td>
-							{{ colaborador.id }}
-							{{ colaborador.nome }}
-						</td>
-						<td>
-							{{ colaborador.pis }}
-							{{ colaborador.pis.errors }}
-						</td>
-						<td>
-							{{ colaborador.matriculas }}
-						</td>
-					</tr>					
-					{% endfor %}
-				</tbody>
-			</table>
-			
-			<div class="paginacao">			
-				<ul class="pagination">
-					{% for p in paginas_range %}					
-			            <li class="{% if p == pagina_atual %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
-			        {% endfor %}
-				</ul>			
-			</div>
-		</div>
+{% if salvo %}
+	<div class="alert alert-success">
+	  Informações salvas.
 	</div>
-
-
-
-</form>
+{% endif %}
+<div class="panel panel-default">
+	
+	<div class="panel-heading">
+		<h4>Colaboradores</h4>
+	</div>
+	<div class="panel-body">
+		<form action="{% url 'salvar_colaboradores' %}" method="post" id="form-colaboradores">
+		
+			{% csrf_token %} 
+			
+			{{ form_colaboradores.management_form }}
+			
+			
+					<div class="barra-colaboradores">
+						<div class="btn-group">
+							<input class="btn btn-primary" type="submit" value="Salvar">
+						</div>
+					</div>
+					<table class="table colaboradores" id="tabela_funcionarios">
+						<thead>
+							<tr>
+								<th>Nome</th>
+								<th>PIS</th>
+								<th>Matrículas</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for colaborador in form_colaboradores %}					
+							<tr class="{%if colaborador.id.value %}old-item{% else %}new-item{%endif%}">
+								<td>
+									{{ colaborador.id }}
+									{{ colaborador.nome }}
+								</td>
+								<td>
+									{{ colaborador.pis }}
+									{{ colaborador.pis.errors }}
+								</td>
+								<td>
+									{{ colaborador.matriculas }}
+								</td>
+							</tr>					
+							{% endfor %}
+						</tbody>
+					</table>
+					
+					<div class="paginacao">			
+						<ul class="pagination">
+							{% for p in paginas_range %}					
+					            <li class="{% if p == pagina_atual %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
+					        {% endfor %}
+						</ul>			
+					</div>
+				
+		
+		
+		
+		</form>
+	</div>
+</div>
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h4>Importar de arquivo</h4>

@@ -105,6 +105,7 @@ class TestPaginaColaboradorExportarParaRelogio(prepare.PrepararParaUsarColaborad
         
     def test_exportar_para_relogio_post(self):      
         self.response = self.client.post(reverse('exportar_para_relogio'),  {'relogio': self.relogio.id})
+        self.assertTemplateUsed(self.response, template_name='return_importacao.html')
         for colaborador_sistema in models.Colaborador.objects.all(): 
             filtro = self.relogio_device.colaboradores.filter(pis=colaborador_sistema.pis)     
             if colaborador_sistema.matriculas.all().count() == 0:  
@@ -225,14 +226,24 @@ class TestColaboradorInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):
                                                            'form-0-pis': '0101', 
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
+        self.assertNotContains(self.response_post, 'Colaborador com este PIS j')
         self.assertContains(self.response_post, 'PIS inválido')
-
-class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
-    
-
-           
         
+    def test_matricula_invalida(self):        
+        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
+                                                           'form-TOTAL_FORMS': 1,
+                                                           'form-INITIAL_FORMS': 0,
+                                                           'form-MIN_NUM_FORMS': 0,
+                                                           'form-MAX_NUM_FORMS': 1000,
+                                                          # 'form-0-id': '', 
+                                                           'form-0-nome': 'Teste', 
+                                                           'form-0-pis': '30341726658', 
+                                                           'form-0-matriculas': '343X434',
+                                                        })    
         
+        self.assertRedirects(self.response_post, reverse('colaboradores') + '?salvo=1')
+        
+class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):         
     
     def test_alteracoes(self):
         self.pis_antigo = self.colaboradores[0].pis        
@@ -249,10 +260,11 @@ class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
            
-        self.assertRedirects(self.response_post, expected_url=reverse('colaboradores'))
+        self.assertRedirects(self.response_post, expected_url=reverse('colaboradores') + '?salvo=1')        
         self.response_get2 = self.client.get(reverse('colaboradores'))
         self.assertNotContains(self.response_get2, self.pis_antigo)
         self.assertContains(self.response_get2, pis)
+        self.assertContains(self.response_get2, 'Informações salvas.')
         
     
         
@@ -273,6 +285,9 @@ class TestImportarArquivoCSV(prepare.PrepararParaImportacao):
         self.assertEquals(Colaborador.objects.filter(nome__contains=' VALIDO').count(), self.total_validos)
         self.assertEquals(Colaborador.objects.filter(nome__contains='INVALIDO').count(), 0)
         self.assertContains(self.response,'INVALIDO', count=self.total_invalidos)
+        self.assertContains(self.response,'erro', count=self.total_invalidos)
+        self.assertContains(self.response,'registrado', count=self.total_validos)
+        self.assertTemplateUsed(self.response, template_name='return_importacao.html')
         
 
 class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):

@@ -1,28 +1,26 @@
 {% extends 'base.html' %}
 {% block conteudo %}
-<h3>Resultado da importação</h3>
-
 
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h4>Resultado da importação</h4>
+		<h4>Resultado do processo</h4>
 	</div>
 	<div class="panel-body">
 		<p>Total de colaboradores analisados: {{ total }}</p>
-		<h5>Colaboradores incluídos: </h5>
+		<h5>Erros: </h5>
 		<ul>
-		{% for colaborador_incluido in colaboradores_incluidos %}
-			<li>{{ colaborador }}</li>
+		{% for erro in erros %}
+			<li class="erro">{{ erro }}</li>
 		{% empty %}
-			<li>Nenhum colaborador incluído.</li>
+			<li>Nenhum erro encontrado.</li>
 		{% endfor %}
 		</ul>
-		<h5>Linhas ignoradas por erro: </h5>
+		<h5>Salvos: </h5>
 		<ul>
-		{% for linha in linhas_ignoradas %}
-			<li>{{ linha }}</li>
+		{% for salvo in salvos %}
+			<li class="registrado">{{ salvo }}</li>
 		{% empty %}
-			<li>Nenhuma linha ignorada.</li>
+			<li>Nenhum.</li>
 		{% endfor %}
 		</ul>
 		

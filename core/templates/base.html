@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css">
 		<link rel="stylesheet" href="{% static 'css/bootstrap-datepicker3.min.css' %}" type="text/css">
 		<link rel="stylesheet" type="text/css" href="{% static 'jsimplespreadsheet/jsimplespreadsheet.css' %}">
+		
 		<script src="{% static 'js/jquery.min.js' %}"></script>
 		<script src="{% static 'js/bootstrap.min.js' %}"></script>
 		<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
@@ -20,8 +21,12 @@
 					case '{% url "colaboradores" %}':
 						tab = 'tab-colaboradores';
 						break;
-					default:
+					case '{% url "index" %}':					
 						tab = 'tab-exportar';
+						break;
+					default:
+						tab = '';
+						
 				}
 				$('#' + tab).addClass('active');
 			});
@@ -38,7 +43,7 @@
 				<li role="presentation"><a data-toggle="tab" href="#registros_funcionarios">Registros por funcionários</a></li>
 				<li role="presentation"><a data-toggle="tab" href="#relogios">Relógios</a></li> -->
 			</ul>
-			<div class="panel panel-default form-principal">
+			<div class="form-principal">
 			<div class="panel-body">
 					
 					{% block conteudo %}

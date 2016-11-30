@@ -13,6 +13,8 @@ import time
 from brazilnum.pis import validate_pis
 from django.core.exceptions import ValidationError
 from core.util import somente_numeros
+from urllib2 import HTTPError
+from _warnings import warn
 
 
 class LoginForm(forms.Form):
@@ -36,20 +38,35 @@ class ExportarParaRelogioForm(forms.Form):
         relogio_banco =  self.cleaned_data['relogio']
         relogio_rep = relogio_banco.get_rep()
         relogio_rep.conectar()
+        salvos = []
+        erros = []
         for colaborador in models.Colaborador.objects.all():
             colaborador_rep = relogioponto.base.Colaborador(relogio_rep)
             colaborador_rep.nome = colaborador.nome
             colaborador_rep.pis = colaborador.pis
             colaborador_rep.matriculas = (m['numero'] for m in colaborador.matriculas.values('numero') )            
             try:
-                colaborador_rep.save()
-                time.sleep(0.2)
+                self._salvar_em_rep(colaborador_rep) 
+                salvos.append(colaborador)
             except RelogioPontoException as e:
-                if not 'cadastrado para outro' in e.message:                    
-                    raise e 
-            
-        
-            
+                erros.append("{0} - {1}".format(colaborador, e.message))
+            except HTTPError as httperr:
+                warn(httperr.message)
+                time.sleep(1)                
+                try:
+                    relogio_rep.conectar()
+                    self._salvar_em_rep(colaborador_rep) 
+                    salvos.append(colaborador)
+                except Exception as ex:
+                    erros.append("{0} - {1}".format(colaborador, ex.message))
+        return salvos, erros  
+              
+    def _salvar_em_rep(self, colaborador_rep):                    
+        try:
+            colaborador_rep.save()                
+        except RelogioPontoException as e:
+            if not 'cadastrado para outro' in e.message:                    
+                raise e     
 
 
 class ColaboradorForm(forms.ModelForm):
@@ -74,7 +91,7 @@ class ColaboradorForm(forms.ModelForm):
         for numero_a_salvar in matriculas_post:
             if numero_a_salvar:
                 matricula = Matricula()
-                matricula.numero = int(numero_a_salvar)
+                matricula.numero = somente_numeros(numero_a_salvar)
                 matricula.colaborador = self.instance
                 #matricula.colaborador.save()
                
@@ -82,7 +99,7 @@ class ColaboradorForm(forms.ModelForm):
         return s     
     
     def clean_pis(self, *args, **kwargs):
-        pis = (somente_numeros(self.cleaned_data['pis']))        
+        pis = (somente_numeros(self.cleaned_data['pis'])) 
         valido = validate_pis(pis)               
         if not valido:            
             raise forms.ValidationError ("PIS inválido")
