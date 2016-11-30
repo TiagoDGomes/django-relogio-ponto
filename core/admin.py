@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from core.models import RelogioPonto, Colaborador, Parametro, Matricula
 from core.forms import ColaboradorForm
+from django.utils.translation import ugettext_lazy as _
 
 class ParametroInline(admin.StackedInline):
     model = Parametro
@@ -34,4 +35,11 @@ class MatriculaInline(admin.StackedInline):
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
     #inlines = [MatriculaInline,]
+    list_display = ['nome', 'pis','verificar_digital','get_matriculas']
     form = ColaboradorForm
+    
+    def get_matriculas(self, obj):
+        matriculas =  (str(x['numero']) for x in obj.matriculas.values('numero'))
+        return "\n".join(matriculas)
+    get_matriculas.allow_tags = True
+    get_matriculas.short_description = _('matrículas')
