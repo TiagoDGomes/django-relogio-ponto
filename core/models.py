@@ -74,7 +74,9 @@ class RelogioPonto(models.Model):
                                     plist.append(propriedade + '="' + parametro_local.valor + '"')
                     cmd = 'self._rep = Tipo(%s)' % ",".join(plist)                    
                     exec cmd
-        return self._rep 
+        return self._rep
+    
+     
 
 
 class Parametro(models.Model):

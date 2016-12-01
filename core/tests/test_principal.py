@@ -197,8 +197,7 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
         
     
          
-    def test_obter(self):
-        '''
+    def test_obter(self):        
         self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '18/10/2016',
                                                                     'fim': '19/10/2016', 
                                                                     'formato': 'default',
@@ -209,9 +208,7 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
         self.assertContains(self.response, self.batida_texto1 )
         self.assertContains(self.response, self.batida_texto2 )
         self.assertContains(self.response, self.batida_texto3 )
-		'''
-        pass
-        
+
         
         
 class TestColaboradorInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):
@@ -259,12 +256,15 @@ class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):
                                                            'form-0-pis': pis, 
                                                            'form-0-matriculas': '666222\n777333',
                                                         }) 
+        url =  reverse('colaboradores') + '?salvo=1'  
+        self.assertRedirects(self.response_post, expected_url=url)   
            
-        self.assertRedirects(self.response_post, expected_url=reverse('colaboradores') + '?salvo=1')        
-        self.response_get2 = self.client.get(reverse('colaboradores'))
+        self.response_get2 = self.client.get(url)
+        self.assertContains(self.response_get2, 'id="info-save"')  
+        
         self.assertNotContains(self.response_get2, self.pis_antigo)
         self.assertContains(self.response_get2, pis)
-        self.assertContains(self.response_get2, 'Informações salvas.')
+        
         
     
         
@@ -311,8 +311,7 @@ class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
         count = 0
         self.response = self.client.get(reverse('colaboradores') + '?page=2')
         for colaborador in self.colaboradores:
-            count+=1
-            
+            count+=1            
             if count <= settings.TOTAL_PAGINACAO:
                 self.assertNotContains(self.response, colaborador.nome)
             else:
@@ -321,16 +320,6 @@ class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
 
     
                 
-        
-class TestBatidasDoRelogio(prepare.PrepararRelogio):
-
-        
-    def test_batidas(self):
-        #registros = self.relogio.get_registros()
-        #for registro in registros:
-        #    print registro
-        pass
-
 
  
 

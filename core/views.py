@@ -56,8 +56,8 @@ def colaboradores(request):
 @login_required    
 def gerar_arquivo(request):
     form = GerarArquivoForm(request.POST)
-    if form.is_valid():
-        response = HttpResponse('', content_type='application/force-download')
+    if form.is_valid():        
+        response = HttpResponse(form.gerar(), content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
         response = HttpResponseForbidden(_('Requisição inválida.'))

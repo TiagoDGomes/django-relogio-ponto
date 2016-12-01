@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
-from core.models import Colaborador, Matricula, RelogioPonto
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -11,10 +11,11 @@ from core import models
 from pyRelogioPonto import relogioponto
 import time
 from brazilnum.pis import validate_pis
-from django.core.exceptions import ValidationError
 from core.util import somente_numeros
 from urllib2 import HTTPError
 from _warnings import warn
+from django.db.models import Q
+
 
 
 class LoginForm(forms.Form):
@@ -29,7 +30,22 @@ class GerarArquivoForm(forms.Form):
     @property
     def nome_arquivo(self):
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
-
+    
+    def gerar(self):
+        registros = RegistroPonto.objects.filter(
+                                                Q(data_hora__gte=self.cleaned_data['inicio'])|
+                                                Q(data_hora__lte=self.cleaned_data['fim'])                                                  
+                                                 )
+        formato = [('matricula',15), 
+                   ('datahora', "%d%m%y%H%M"),
+                   ('personalizado','00100100'),
+                  ]
+        resultado = []
+        for registro in registros:
+            resultado.append(registro.converter_em_texto(formato))
+        
+        return "\n".join(resultado)
+    
 
 class ExportarParaRelogioForm(forms.Form):
     relogio = forms.ModelChoiceField(RelogioPonto.objects)
