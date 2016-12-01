@@ -98,6 +98,7 @@ class RegistroPonto(models.Model):
     relogio = models.ForeignKey(RelogioPonto)
     colaborador = models.ForeignKey(Colaborador)
     data_hora = models.DateTimeField()
+    exportado = models.BooleanField(default=False)
     
     def __str__(self):
         return "{nome} ({pis}): {batida}".format(
@@ -160,9 +161,29 @@ class RegistroPonto(models.Model):
 
         return "".join(res) 
     
-'''
+
 class FormatoExportacao(models.Model):
     nome = models.CharField(max_length=25)
     formato = models.CharField(max_length=100)
-'''    
+    
+    ''' 
+    
+    Formatação: 
+    Exemplo de formato:
+       [matricula|:|15][datahora|:|%d%m%y%H%M][personalizado|:|00100100]
+       
+       ira gerar:
+       
+        [('matricula',15), 
+         ('datahora', "%d%m%y%H%M"),
+         ('personalizado','00100100'),
+        ]       
+        
+    '''
+    def to_python(self):
+        f = self.formato.split("][")
+        return f   
+    
+    
+    
                 
