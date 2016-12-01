@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% block conteudo %}
 {% if salvo %}
-	<div class="alert alert-success">
+	<div id="info-save" class="alert alert-success">
 	  Informações salvas.
 	</div>
+	<script>
+	function hideAlert(){$('#info-save').fadeOut('slow');}
+	setTimeout(hideAlert, 3000);
+	</script>
 {% endif %}
 <div class="panel panel-default">
 	
