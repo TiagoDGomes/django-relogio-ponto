@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
-from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto,\
+    Parametro
 from django.forms.widgets import Textarea
 from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -136,3 +137,19 @@ ColaboradorFormSet = modelformset_factory(Colaborador,
                                          form=ColaboradorForm, 
                                          extra=1, 
                                          fields=('__all__')) 
+
+
+
+
+class ParametroForm(forms.ModelForm):
+    model = Parametro
+    
+    def __init__(self, *args, **kwargs):
+        super(ParametroForm, self).__init__(*args, **kwargs)
+        if 'instance' in kwargs:
+            instance = kwargs['instance']
+            if 'int' in instance.tipo:
+                self.fields['valor'] = forms.IntegerField()
+        
+        
+        
