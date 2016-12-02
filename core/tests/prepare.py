@@ -31,7 +31,7 @@ class PrepararParaCriarUsuarioAdminLogado(PrepararParaCriarUsuarioLogado):
 class PrepararParaTerUsuarioLogado(PrepararParaCriarUsuarioLogado):   
     def setUp(self):        
         super(PrepararParaTerUsuarioLogado, self).setUp()
-        self.response = self.client.get('/')
+        self.response = self.client.get(reverse('index'))
 
         
              

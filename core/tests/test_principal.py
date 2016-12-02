@@ -13,7 +13,7 @@ from django.db.models import Q
         
 class TestPaginaInicialSemAutenticar(TestCase):
     def setUp(self):
-        self.response = self.client.get('/') 
+        self.response = self.client.get(reverse('index')) 
 
     def test_302(self):
         self.assertEqual(302, self.response.status_code) 
@@ -38,7 +38,7 @@ class TestLogout(prepare.PrepararParaTerUsuarioLogado):
     def test_logout(self):
         self.response = self.client.get(reverse('site_logout'))   
         self.assertEqual(302, self.response.status_code)
-        self.assertRedirects(self.response, '%s?next=/' % reverse('admin:login'))
+        self.assertRedirects(self.response, '%s?next=%s' % (reverse('admin:login'), reverse('index')))
         user = auth.get_user(self.client)   
         self.assertFalse(user.is_authenticated())   
         
