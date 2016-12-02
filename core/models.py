@@ -95,10 +95,15 @@ class Parametro(models.Model):
          
 
 class RegistroPonto(models.Model):
-    relogio = models.ForeignKey(RelogioPonto)
-    colaborador = models.ForeignKey(Colaborador)
-    data_hora = models.DateTimeField()
-    exportado = models.BooleanField(default=False)
+    relogio = models.ForeignKey(RelogioPonto,verbose_name='relógio')
+    colaborador = models.ForeignKey(Colaborador, related_name='registros')
+    data_hora = models.DateTimeField(verbose_name='data do registro')
+    exportado = models.BooleanField(default=False, verbose_name='registro exportado')
+    
+    class Meta:
+        verbose_name = 'registro de ponto'
+        verbose_name_plural = 'registros de ponto'
+    
     
     def __str__(self):
         return "{nome} ({pis}): {batida}".format(
