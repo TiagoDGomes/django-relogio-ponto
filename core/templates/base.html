@@ -1,5 +1,12 @@
-{% extends 'admin/base.html' %}^
+{% extends 'admin/base_site.html' %}
 {% load static %}
+{% block title %}{{ title }}  }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Sistema de controle de ponto eletrônico') }}</a></h1>
+{% endblock %}
+
+
 {% block extrahead %}{{ block.super }}
 	
 		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
