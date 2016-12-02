@@ -4,18 +4,26 @@ from django.contrib import admin
 from core.models import RelogioPonto, Colaborador, Parametro, Matricula,\
     RegistroPonto
 from django.utils.translation import ugettext_lazy as _
+from core.forms import ParametroForm
+from settings import STATIC_URL
 
-class ParametroInline(admin.StackedInline):
+class ParametroInline(admin.TabularInline):
     model = Parametro
     extra = 0
     max_num = 0
-    
+    form = ParametroForm
+    can_delete = False
 
 @admin.register(RelogioPonto)
 class RelogioPontoAdmin(admin.ModelAdmin):
     inlines = [ParametroInline,]
     list_display = ['nome', 'tipo',]
     
+    class Media:
+        js = (
+              STATIC_URL + 'js/colaborador_admin.js',              
+              )
+              
     def get_inline_instances(self, request, obj=None):
         if obj:
             return [inline(self.model, self.admin_site) for inline in self.inlines]
@@ -23,14 +31,15 @@ class RelogioPontoAdmin(admin.ModelAdmin):
             return []
         
     def add_view(self, request,  form_url='', extra_context=None):
-        extra_context = extra_context or {}
-        extra_context['show_save'] = False             
+        extra_context = extra_context or {}        
+        extra_context['show_save'] = False                
         return super(RelogioPontoAdmin, self).add_view(request, form_url, extra_context=extra_context)
     
 
 class MatriculaInline(admin.TabularInline):
     model = Matricula
     extra = 1
+    
 
 class RegistroPontoInline(admin.TabularInline):
     model = RegistroPonto
@@ -39,10 +48,11 @@ class RegistroPontoInline(admin.TabularInline):
     fields = ['data_hora', 'relogio', 'exportado' ]
     can_delete = False
     fieldsets = []
+    
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
-    inlines = [MatriculaInline,RegistroPontoInline,]    
+    inlines = [MatriculaInline, RegistroPontoInline,]    
     list_display = ['nome', 'pis','verificar_digital','get_matriculas']
     #form = ColaboradorForm
     fieldsets = [
