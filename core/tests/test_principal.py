@@ -204,10 +204,23 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
                                                                     })
         self.assertEqual(200, self.response.status_code)   
         self.assertTrue('Content-Disposition' in self.response) 
-        self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        self.assertTrue('2016-10-18.2016-10-19.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
         self.assertNotContains(self.response, self.batida_texto1)
         self.assertNotContains(self.response, self.batida_texto2)
         self.assertContains(self.response, self.batida_texto3)
+        
+        # segunda tentativa, mesma data no inicio e fim
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '19/10/2016',
+                                                                    'fim': '19/10/2016', 
+                                                                    'formato': 'default',
+                                                                    })
+        self.assertEqual(200, self.response.status_code)   
+        self.assertTrue('Content-Disposition' in self.response) 
+        self.assertTrue('"2016-10-19.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
+        self.assertNotContains(self.response, self.batida_texto1)
+        self.assertNotContains(self.response, self.batida_texto2)
+        self.assertContains(self.response, self.batida_texto3)
+        
 
     def test_obter_nada(self):        
         self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '01/01/1999',

@@ -15,6 +15,7 @@ from core.util import somente_numeros
 from urllib2 import HTTPError
 from _warnings import warn
 from django.db.models import Q
+from datetime import datetime
 
 
 
@@ -30,23 +31,27 @@ class GerarArquivoForm(forms.Form):
     
     @property
     def nome_arquivo(self):
-        return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
+        if self.cleaned_data['inicio'] == self.cleaned_data['fim']:
+            return "{0}".format( self.cleaned_data['inicio'].strftime('%Y-%m-%d'))
+        return "{0}.{1}".format( self.cleaned_data['inicio'].strftime('%Y-%m-%d'), self.cleaned_data['fim'].strftime('%Y-%m-%d'))
     
     def gerar(self):
+        
+        data_inicio = datetime.combine(self.cleaned_data['inicio'], datetime.min.time())        
+        data_fim = datetime.combine(self.cleaned_data['fim'], datetime.max.time())
+        
         registros = RegistroPonto.objects.filter(
-                                                Q(data_hora__gte=self.cleaned_data['inicio'])&
-                                                Q(data_hora__lte=self.cleaned_data['fim'])                                                  
+                                                Q(data_hora__gte=data_inicio)&
+                                                Q(data_hora__lte=data_fim)                                                  
                                                  )
         formato = [('matricula',15), 
                    ('datahora', "%d%m%y%H%M"),
                    ('personalizado','00100100'),
                   ]
         resultado = []
-        for registro in registros:
-            print registro
+        for registro in registros:           
             resultado.append(registro.converter_em_texto(formato))
-        
-        return "\n".join(resultado)
+        return "\r\n".join(resultado)
     
 
 class ExportarParaRelogioForm(forms.Form):
