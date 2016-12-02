@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib import admin
-from core.models import RelogioPonto, Colaborador, Parametro, Matricula
-from core.forms import ColaboradorForm
+from core.models import RelogioPonto, Colaborador, Parametro, Matricula,\
+    RegistroPonto
 from django.utils.translation import ugettext_lazy as _
 
 class ParametroInline(admin.StackedInline):
@@ -28,18 +28,33 @@ class RelogioPontoAdmin(admin.ModelAdmin):
         return super(RelogioPontoAdmin, self).add_view(request, form_url, extra_context=extra_context)
     
 
-class MatriculaInline(admin.StackedInline):
+class MatriculaInline(admin.TabularInline):
     model = Matricula
     extra = 1
+
+class RegistroPontoInline(admin.TabularInline):
+    model = RegistroPonto
+    extra = 0
+    readonly_fields = ['relogio', 'data_hora', ]
+    fields = ['data_hora', 'relogio', 'exportado' ]
+    can_delete = False
+    fieldsets = []
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
-    #inlines = [MatriculaInline,]
+    inlines = [MatriculaInline,RegistroPontoInline,]    
     list_display = ['nome', 'pis','verificar_digital','get_matriculas']
-    form = ColaboradorForm
+    #form = ColaboradorForm
+    fieldsets = [
+                 ('Informações básicas', {'fields':['nome', 'pis','verificar_digital',]}) ,
+                 
+                    
+                ]
     
     def get_matriculas(self, obj):
         matriculas =  (str(x['numero']) for x in obj.matriculas.values('numero'))
         return "\n".join(matriculas)
     get_matriculas.allow_tags = True
     get_matriculas.short_description = _('matrículas')
+    
+
