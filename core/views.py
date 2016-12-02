@@ -23,12 +23,15 @@ def site_logout(request):
 
 @login_required
 def index(request): 
+    title = 'Exportar registros'
     form_gerar_arquivo = GerarArquivoForm() 
     mensagem = 'Não há registros no período selecionado.' if 'nr' in request.GET else None
     return render(request, 'exportar.html', locals())
 
+
 @login_required
 def colaboradores(request): 
+    title = 'Colaboradores'
     query = Colaborador.objects.all()
     paginator = Paginator(query, settings.TOTAL_PAGINACAO)
     page = request.GET.get('page')
