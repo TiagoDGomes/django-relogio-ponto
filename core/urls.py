@@ -6,7 +6,7 @@ from core import views
 from django.contrib import admin
 
 
-admin.site.site_header = _('Sistema de ponto eletrônico')
+admin.site.site_header = _('Sistema de controle de ponto eletrônico')
 admin.site.index_title = admin.site.index_title 
 admin.site.site_title = admin.site.index_title 
 
