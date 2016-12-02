@@ -27,13 +27,14 @@ class GerarArquivoForm(forms.Form):
     inicio = forms.DateField()
     fim = forms.DateField()
     formato = forms.ChoiceField(choices=[('default',_('Formato padrão'))], label='Formato')
+    
     @property
     def nome_arquivo(self):
         return "{0}-{1}".format( self.cleaned_data['inicio'].strftime('%d%m%Y'), self.cleaned_data['fim'].strftime('%d%m%Y'))
     
     def gerar(self):
         registros = RegistroPonto.objects.filter(
-                                                Q(data_hora__gte=self.cleaned_data['inicio'])|
+                                                Q(data_hora__gte=self.cleaned_data['inicio'])&
                                                 Q(data_hora__lte=self.cleaned_data['fim'])                                                  
                                                  )
         formato = [('matricula',15), 
@@ -42,6 +43,7 @@ class GerarArquivoForm(forms.Form):
                   ]
         resultado = []
         for registro in registros:
+            print registro
             resultado.append(registro.converter_em_texto(formato))
         
         return "\n".join(resultado)

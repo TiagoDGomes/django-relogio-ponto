@@ -45,7 +45,15 @@
 			</ul>
 			<div class="form-principal">
 			<div class="panel-body">
-					
+					{% if mensagem %}
+						<div id="info-save" class="alert alert-{{ mensagem_tipo|default:'success' }}">
+						  {{ mensagem }}
+						</div>
+						<script>
+						function hideAlert(){$('#info-save').fadeOut('slow');}
+						setTimeout(hideAlert, 5000);
+						</script>
+					{% endif %}
 					{% block conteudo %}
 					
 					{% endblock conteudo %} 				

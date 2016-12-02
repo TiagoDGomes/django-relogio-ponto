@@ -24,6 +24,7 @@ def site_logout(request):
 @login_required
 def index(request): 
     form_gerar_arquivo = GerarArquivoForm() 
+    mensagem = 'Não há registros no período selecionado.' if 'nr' in request.GET else None
     return render(request, 'exportar.html', locals())
 
 @login_required
@@ -49,15 +50,18 @@ def colaboradores(request):
         form_exportar_para_relogio = ExportarParaRelogioForm()
         
     paginas_range = range(1, objects.paginator.num_pages+1)
-    salvo = 'salvo' in request.GET
+    mensagem = 'Informações salvas.' if 'salvo' in request.GET else None
     return render(request, 'colaboradores.html', locals())
     
 
 @login_required    
 def gerar_arquivo(request):
     form = GerarArquivoForm(request.POST)
-    if form.is_valid():        
-        response = HttpResponse(form.gerar(), content_type='application/force-download')
+    if form.is_valid():   
+        dados = form.gerar()
+        if not dados:
+            return HttpResponseRedirect(reverse('index') + '?nr=1')     
+        response = HttpResponse(dados, content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
         response = HttpResponseForbidden(_('Requisição inválida.'))

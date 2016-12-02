@@ -205,9 +205,23 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
         self.assertEqual(200, self.response.status_code)   
         self.assertTrue('Content-Disposition' in self.response) 
         self.assertTrue('18102016-19102016.txt' in self.response['Content-Disposition'], msg='Nome errado de arquivo' )
-        self.assertContains(self.response, self.batida_texto1 )
-        self.assertContains(self.response, self.batida_texto2 )
-        self.assertContains(self.response, self.batida_texto3 )
+        self.assertNotContains(self.response, self.batida_texto1)
+        self.assertNotContains(self.response, self.batida_texto2)
+        self.assertContains(self.response, self.batida_texto3)
+
+    def test_obter_nada(self):        
+        self.response = self.client.post(reverse('gerar_arquivo'), {'inicio': '01/01/1999',
+                                                                    'fim': '01/01/2000', 
+                                                                    'formato': 'default',
+                                                                    })
+        redir_url = reverse('index') + '?nr=1'
+        self.assertEqual(302, self.response.status_code)  
+        self.assertRedirects(self.response, redir_url)
+         
+        self.assertFalse('Content-Disposition' in self.response) 
+        self.response = self.client.get(redir_url)
+        self.assertContains(self.response , 'Não há registros no período selecionado.') 
+        
 
         
         
@@ -239,6 +253,7 @@ class TestColaboradorInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):
                                                         })    
         
         self.assertRedirects(self.response_post, reverse('colaboradores') + '?salvo=1')
+        
         
 class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):         
     
