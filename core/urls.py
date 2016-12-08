@@ -4,10 +4,7 @@ from django.conf.urls import url, include
 from django.utils.translation import ugettext_lazy as _
 from core import views
 from django.contrib import admin
-
-admin.site.site_header = _('Sistema de controle de ponto eletrônico')
-admin.site.index_title = admin.site.index_title 
-admin.site.site_title = admin.site.index_title 
+from core.admin import admin_site
 
 
 urlpatterns = [
@@ -18,6 +15,6 @@ urlpatterns = [
     url(r'^ponto/salvar_colaborador$', views.salvar_colaboradores, name='salvar_colaboradores' )  , 
     url(r'^ponto/colaboradores$', views.colaboradores, name='colaboradores' )  , 
     url(r'^ponto/syslogout$', views.site_logout, name='site_logout' )  ,
-    url(r'^ponto/sistema/', include(admin.site.urls), name="pagina_inicial"),      
+    url(r'^ponto/sistema/', admin_site.urls, name="pagina_inicial"),      
 ]
 
