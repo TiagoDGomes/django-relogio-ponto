@@ -18,7 +18,7 @@ from brazilnum.pis import validate_pis
 
 def site_logout(request):
     logout(request)
-    return HttpResponseRedirect('%s?next=/' % reverse('admin:login'))
+    return HttpResponseRedirect('%s?next=%s' % (reverse('admin:login'), reverse('index')))
 
 
 @login_required
