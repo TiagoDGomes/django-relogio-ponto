@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.utils.translation import ugettext_lazy as _
 from core import views
 from django.contrib import admin
-from core.admin import admin_site
 
+
+admin.site.site_title = _('Sistema de controle de relógio de ponto')
+admin.site.index_title = _('Sistema de controle de relógio de ponto')
+admin.site.site_header = _('Sistema de controle de relógio de ponto')
+admin.site.site_url = None
 
 urlpatterns = [
     url(r'^gerar_arquivo$', views.gerar_arquivo, name='gerar_arquivo' )  , 

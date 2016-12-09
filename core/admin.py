@@ -10,12 +10,6 @@ from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 
-class CustomAdminSite(AdminSite):
-    site_title = _('Sistema de controle de relógio de ponto')
-    site_header = site_title
-    index_title = _('Página inicial')
-
-
 
 class ParametroInline(admin.TabularInline):
     model = Parametro
@@ -78,10 +72,7 @@ class ColaboradorAdmin(admin.ModelAdmin):
     get_matriculas.short_description = _('matrículas')
     
 
-admin_site = CustomAdminSite(name='sistema')
-admin_site.register(Colaborador, ColaboradorAdmin)
-admin_site.register(RelogioPonto, RelogioPontoAdmin)
-admin_site.register(User, UserAdmin)
-admin_site.register(Group, GroupAdmin)
+
+
 
 
