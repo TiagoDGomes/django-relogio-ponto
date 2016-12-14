@@ -4,8 +4,9 @@ from django.conf.urls import url
 from django.utils.translation import ugettext_lazy as _
 from core import views
 from django.contrib import admin
+from core.sites import SitePlus
 
-
+#admin.site = SitePlus()
 admin.site.site_title = _('Sistema de controle de relógio de ponto')
 admin.site.index_title = _('Sistema de controle de relógio de ponto')
 admin.site.site_header = _('Sistema de controle de relógio de ponto')

@@ -27,23 +27,7 @@
 	</div>
 </div>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h4>Importar de arquivo</h4>
-	</div>
-	<div class="panel-body">
-		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
-			<div class="row">
-				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
-				<div class="col-sm-6">
-					{% csrf_token %} 
-					<input name="arquivo_csv" type="file" class="btn">
-				</div>
-				<div class="col-sm-2">
-					<input type="submit" value="Importar" class="btn btn-primary">
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
+<p>
+<a href="{% url 'colaboradores' %}">Voltar para página de importação/exportação</a>
+</p>
 {% endblock conteudo %}

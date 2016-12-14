@@ -18,3 +18,31 @@
 .paginacao{
 	text-align: center 
 }
+#header{
+	height: 60px !important
+}
+.dashboard #content {
+    width: 100%; 
+}
+#content-related{
+	float: inherit;
+	clear: both;
+	width: inherit;
+	
+}
+a.deletelink,a.deletelink:link,  a.deletelink:visited{
+	height: 40px !important;
+	color: white
+}
+h1, h2, h3, h4, h5, h6 {
+	line-height: inherit
+}
+.panel-heading{
+	background-color: #79aec8 !important;
+	color: white !important;
+	text-transform: uppercase;
+
+}
+.panel-heading h4{
+	font-weight: normal;
+}

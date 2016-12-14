@@ -11,9 +11,8 @@ from django.urls.base import reverse
 from core.models import Colaborador, Matricula
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-import settings
 from brazilnum.pis import validate_pis
+from django.views.generic.base import TemplateView
 
 
 def site_logout(request):
@@ -23,37 +22,19 @@ def site_logout(request):
 
 @login_required
 def index(request): 
-    title = 'Exportar registros'
-    form_gerar_arquivo = GerarArquivoForm() 
-    mensagem = 'Não há registros no período selecionado.' if 'nr' in request.GET else None
-    return render(request, 'exportar.html', locals())
+    return HttpResponseRedirect(reverse('admin:index'))
 
 
 @login_required
 def colaboradores(request): 
     title = 'Colaboradores'
-    query = Colaborador.objects.all()
-    paginator = Paginator(query, settings.TOTAL_PAGINACAO)
-    page = request.GET.get('page')
-    try:
-        objects = paginator.page(page)
-        pagina_atual = int(page)
-    except PageNotAnInteger:        
-        objects = paginator.page(1)
-        pagina_atual = 1
-    except EmptyPage:
-        objects = paginator.page(paginator.num_pages)
-        pagina_atual = paginator.num_pages
-    page_query = query.filter(id__in=[obj.id for obj in objects])
+    has_permission = True
+    user = request.user    
     if request.POST:
-        form_colaboradores = ColaboradorFormSet(request.POST, queryset=page_query, )  
         form_exportar_para_relogio = ExportarParaRelogioForm(request.POST)
-    else:
-        form_colaboradores = ColaboradorFormSet(queryset=page_query)    
-        form_exportar_para_relogio = ExportarParaRelogioForm()
-        
-    paginas_range = range(1, objects.paginator.num_pages+1)
-    mensagem = 'Informações salvas.' if 'salvo' in request.GET else None
+    else:  
+        form_exportar_para_relogio = ExportarParaRelogioForm()    
+    
     return render(request, 'colaboradores.html', locals())
     
 
@@ -63,7 +44,7 @@ def gerar_arquivo(request):
     if form.is_valid():   
         dados = form.gerar()
         if not dados:
-            return HttpResponseRedirect(reverse('index') + '?nr=1')     
+            return HttpResponseRedirect(reverse('admin:index') + '?nr=1' )     
         response = HttpResponse(dados, content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
@@ -83,6 +64,9 @@ def salvar_colaboradores(request):
 def importar_arquivo_csv(request):
     salvos = [] 
     erros = []  
+    title = 'Colaboradores'
+    has_permission = True
+    user = request.user  
     file_string = handle_uploaded_file(request.FILES['arquivo_csv']) 
     if ',' in file_string:
         separador = ','
@@ -135,4 +119,16 @@ def exportar_para_relogio(request):
         return render(request, 'return_importacao.html', locals())
     else:
         return colaboradores(request) 
+    
+    
+
+class WelcomeAdminView(TemplateView):
+    template_name = 'admin/index.html'
+
+    def get(self, request, *args, **kwargs):        
+        from core.sites import admin_site
+        form_gerar_arquivo = GerarArquivoForm()
+        messages = ['Não há registros no período selecionado.'] if 'nr' in request.GET else None
+        colaborador_model = type(Colaborador)
+        return admin_site.index(request, extra_context=locals())
             

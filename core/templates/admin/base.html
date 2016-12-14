@@ -6,7 +6,8 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
-{% block extrahead %}{% endblock %}
+{% block extrahead %}{{ block.super }}
+	{% include 'part/header.html' %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
 {% load i18n %}
@@ -19,6 +20,7 @@
 
     {% if not is_popup %}
     <!-- Header -->
+    
     <div id="header">
         <div id="branding">
         {% block branding %}{% endblock %}
@@ -30,7 +32,7 @@
                 {% trans 'Welcome,' %}
                 <strong>{% firstof user.get_short_name user.get_username %}</strong>.
             {% endblock %}
-            {% block userlinks %}
+            {% block userlinks %}            	
                 {% if site_url %}
                     <a href="{{ site_url }}">{% trans 'View site' %}</a> /
                 {% endif %}

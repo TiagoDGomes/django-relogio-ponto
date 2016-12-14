@@ -28,7 +28,7 @@ class PrepararParaCriarUsuarioAdminLogado(PrepararParaCriarUsuarioLogado):
     
 
 
-class PrepararParaTerUsuarioLogado(PrepararParaCriarUsuarioLogado):   
+class PrepararParaTerUsuarioLogado(PrepararParaCriarUsuarioAdminLogado):   
     def setUp(self):        
         super(PrepararParaTerUsuarioLogado, self).setUp()
         self.response = self.client.get(reverse('index'))
@@ -92,8 +92,9 @@ class PrepararParaUsarColaboradores(PrepararParaTerUsuarioLogado):
         
         
         super(PrepararParaUsarColaboradores, self).setUp()    
-        self.response = self.client.get(reverse('colaboradores'))
-
+        self.response = self.client.get(reverse('colaboradores'))        
+        #self.response = self.client.get(reverse('admin:core_colaborador_changelist')) 
+        
  
 class PrepararParaImportacao(PrepararParaTerUsuarioLogado):  
     def setUp(self):

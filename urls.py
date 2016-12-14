@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from core.sites import admin_site
 
 urlpatterns = [
-    url(r'^ponto/sistema/', admin.site.urls),
+    url(r'^ponto/sistema/', admin_site.urls),
     url(r'^ponto/', include('core.urls'))
 ]

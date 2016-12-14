@@ -9,25 +9,21 @@ import settings
 from core.tests import prepare
 from core import models
 from django.db.models import Q
+from core.forms import ColaboradorForm
         
         
 class TestPaginaInicialSemAutenticar(TestCase):
     def setUp(self):
-        self.response = self.client.get(reverse('index')) 
+        self.response = self.client.get(reverse('admin:index')) 
 
     def test_302(self):
         self.assertEqual(302, self.response.status_code) 
         
-        
+       
 class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):    
-    def test_formulario(self):   
-        self.assertContains(self.response, text='csrfmiddlewaretoken', )  
-        self.assertContains(self.response, text='type="submit"',)        
-        self.assertContains(self.response, text='<select ',)        
-        self.assertContains(self.response, text='Formato padr',)        
-        self.assertContains(self.response, text=reverse('gerar_arquivo'), )
-        self.assertContains(self.response, text=reverse('site_logout'), )        
-        self.assertNotContains(self.response, text='type="file"', )
+    def test_302(self):
+        self.assertEqual(302, self.response.status_code) 
+        self.assertRedirects(self.response, reverse('admin:index'))
 
 
         
@@ -45,53 +41,38 @@ class TestLogout(prepare.PrepararParaTerUsuarioLogado):
         
         
 
-            
-        
-class TestRelogioAddAdmin(prepare.PrepararParaCriarUsuarioAdminLogado):    
-    def setUp(self):
-        super(TestRelogioAddAdmin, self).setUp()
-        self.response = self.client.get(reverse('admin:core_relogioponto_add'))
-    
-    def test_remove_save_button(self):
-        self.assertNotContains(self.response, text='name="_save"')  
+
         
        
 
         
-class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):       
-    def test_formulario(self):          
+class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):
+            
+    def test_formulario(self):        
         self.assertContains(self.response, text='csrfmiddlewaretoken',)  
-        self.assertContains(self.response, text='type="submit"', count=3) # salvar, importar CSV e exportar para relógio        
-        self.assertContains(self.response, text='<form', count=3)        
+        self.assertContains(self.response, text='type="submit"', count=2) #importar CSV e exportar para relógio        
+        self.assertContains(self.response, text='<form', count=2)        
         self.assertNotContains(self.response, text=reverse('gerar_arquivo'), )
-        self.assertContains(self.response, text=reverse('site_logout'), )
+        self.assertContains(self.response, text=reverse('admin:logout'), )
         self.assertContains(self.response, text='type="file"', )
         
-        NUMERO_INPUTS_TABELACOLABORADOR = 3
         
         
-        TOTAL_INPUTS_FIXOS = 4 + 5 + 2 
-        self.assertContains(self.response, 'id="tabela_funcionarios"')
-        numero_inputs = len(self.colaboradores) * NUMERO_INPUTS_TABELACOLABORADOR + TOTAL_INPUTS_FIXOS + NUMERO_INPUTS_TABELACOLABORADOR
-        self.assertContains(self.response, text="<input ",  count=numero_inputs)          
+        self.assertContains(self.response, text="<input ",  count=5)          
         
         self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
         self.assertContains(self.response, text=reverse('exportar_para_relogio'))
         self.assertContains(self.response, text='name="arquivo_csv"') 
         self.assertContains(self.response, text='value="Exportar"') 
         self.assertContains(self.response, text='<select') 
+        self.assertNotContains(self.response, text='nav-tabs') 
+        self.assertNotContains(self.response, text='Sair') 
                
         
     def test_gravacao(self):
         self.assertEqual(len(self.colaboradores), (Colaborador.objects.count()), msg='Quantidade invalida de colaboradores registrados')
         
-    def test_listar_usuarios(self):
-        for colaborador in self.colaboradores:            
-            self.assertContains(self.response, text=colaborador.nome)
-            
-    def test_matriculas(self):    
-        for matricula in self.matriculas:  
-            self.assertContains(self.response, text=matricula.numero)
+
             
 
 class TestPaginaColaboradorExportarParaRelogio(prepare.PrepararParaUsarColaboradores, prepare.PrepararRelogio): 
@@ -227,9 +208,11 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
                                                                     'fim': '01/01/2000', 
                                                                     'formato': 'default',
                                                                     })
-        redir_url = reverse('index') + '?nr=1'
-        self.assertEqual(302, self.response.status_code)  
+        redir_url = reverse('admin:index') + '?nr=1'
         self.assertRedirects(self.response, redir_url)
+        self.assertEqual(302, self.response.status_code)  
+        
+        
          
         self.assertFalse('Content-Disposition' in self.response) 
         self.response = self.client.get(redir_url)
@@ -238,112 +221,33 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
 
         
         
-class TestColaboradorInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):
-    def test_pis_invalido(self):        
-        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
-                                                           'form-TOTAL_FORMS': 1,
-                                                           'form-INITIAL_FORMS': 0,
-                                                           'form-MIN_NUM_FORMS': 0,
-                                                           'form-MAX_NUM_FORMS': 1000,
-                                                          # 'form-0-id': '', 
-                                                           'form-0-nome': 'Teste', 
-                                                           'form-0-pis': '0101', 
-                                                           'form-0-matriculas': '666222\n777333',
-                                                        }) 
-        self.assertNotContains(self.response_post, 'Colaborador com este PIS j')
-        self.assertContains(self.response_post, 'PIS inválido')
-        
-    def test_matricula_invalida(self):        
-        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
-                                                           'form-TOTAL_FORMS': 1,
-                                                           'form-INITIAL_FORMS': 0,
-                                                           'form-MIN_NUM_FORMS': 0,
-                                                           'form-MAX_NUM_FORMS': 1000,
-                                                          # 'form-0-id': '', 
-                                                           'form-0-nome': 'Teste', 
-                                                           'form-0-pis': '30341726658', 
-                                                           'form-0-matriculas': '343X434',
-                                                        })    
-        
-        self.assertRedirects(self.response_post, reverse('colaboradores') + '?salvo=1')
-        
-        
-class TestColaboradoresPost(prepare.PrepararParaUsarColaboradores):         
-    
-    def test_alteracoes(self):
-        self.pis_antigo = self.colaboradores[0].pis        
-        self.novo_nome = 'TesteSalvar'
-        pis = '50750683739'
-        self.response_post = self.client.post(reverse('salvar_colaboradores'), {
-                                                           'form-TOTAL_FORMS': 2,
-                                                           'form-INITIAL_FORMS': 1,
-                                                           'form-MIN_NUM_FORMS': 0,
-                                                           'form-MAX_NUM_FORMS': 1000,
-                                                           'form-0-id': self.colaboradores[0].id, 
-                                                           'form-0-nome': self.novo_nome, 
-                                                           'form-0-pis': pis, 
-                                                           'form-0-matriculas': '666222\n777333',
-                                                        }) 
-        url =  reverse('colaboradores') + '?salvo=1'  
-        self.assertRedirects(self.response_post, expected_url=url)   
-           
-        self.response_get2 = self.client.get(url)
-        self.assertContains(self.response_get2, 'id="info-save"')  
-        
-        self.assertNotContains(self.response_get2, self.pis_antigo)
-        self.assertContains(self.response_get2, pis)
-        
-        
+class TestColaboradorInvalido(prepare.PrepararParaUsarColaboradores):
+    def test_pis_invalido(self):
+        post = {'nome': 'Teste', 'pis': 1}
+        form = ColaboradorForm(post)        
+        self.assertFalse(form.is_valid())
+        self.assertFalse('PIS inválido' in form.errors)        
     
         
-        colaborador_salvo = Colaborador.objects.get(pis=pis)
-        self.assertEqual(colaborador_salvo.nome, 'TesteSalvar', 'Nome nao foi salvo')
-        self.assertEquals(colaborador_salvo.matriculas.filter(numero=666222).count(), 1)
-        self.assertEquals(colaborador_salvo.matriculas.filter(numero=777333).count(), 1)
-
-        self.assertNotContains(self.response_get2, text=self.matricula_antiga1)
-        self.assertNotContains(self.response_get2, text=self.matricula_antiga2)
-        self.assertContains(self.response_get2, text='666222', count=1)
-        self.assertContains(self.response_get2, text='777333', count=1)
         
-                      
+                     
                     
 class TestImportarArquivoCSV(prepare.PrepararParaImportacao):    
     def test_resposta(self):        
         self.assertEquals(Colaborador.objects.filter(nome__contains=' VALIDO').count(), self.total_validos)
         self.assertEquals(Colaborador.objects.filter(nome__contains='INVALIDO').count(), 0)
-        self.assertContains(self.response,'INVALIDO', count=self.total_invalidos)
-        self.assertContains(self.response,'erro', count=self.total_invalidos)
-        self.assertContains(self.response,'registrado', count=self.total_validos)
+        self.assertContains(self.response, 'INVALIDO', count=self.total_invalidos)
+        self.assertContains(self.response, 'erro', count=self.total_invalidos)
+        self.assertContains(self.response, 'registrado', count=self.total_validos)
+        self.assertContains(self.response, 'Voltar para')
+        self.assertContains(self.response, reverse('colaboradores'))
+        
         self.assertTemplateUsed(self.response, template_name='return_importacao.html')
         
 
-class TestPaginacaoColaboradores(prepare.PrepararParaImportacao):
-    def setUp(self):
-        prepare.PrepararParaImportacao.setUp(self)
-        self.colaboradores = Colaborador.objects.all()        
 
-    def test_primeira_pagina(self):
-        count = 0
-        self.response = self.client.get(reverse('colaboradores'))
-        self.assertContains(self.response, 'class="pagination')
-        
-        for colaborador in self.colaboradores:
-            count+=1
-            if count <= settings.TOTAL_PAGINACAO:
-                self.assertContains(self.response, colaborador.nome)
-            else:
-                self.assertNotContains(self.response, colaborador.nome)        
 
-    def test_segunda_pagina(self):
-        count = 0
-        self.response = self.client.get(reverse('colaboradores') + '?page=2')
-        for colaborador in self.colaboradores:
-            count+=1            
-            if count <= settings.TOTAL_PAGINACAO:
-                self.assertNotContains(self.response, colaborador.nome)
-            else:
-                self.assertContains(self.response, colaborador.nome)
+            
                 
 
     

@@ -94,34 +94,12 @@ class ExportarParaRelogioForm(forms.Form):
 
 
 class ColaboradorForm(forms.ModelForm):
-    matriculas = forms.CharField(widget=Textarea(attrs={'rows':1, 'cols':6,}), required=False)
     
     class Meta:
         model = Colaborador
         fields = '__all__'
-        
-    def __init__(self, *args, **kwargs):
-        super(ColaboradorForm, self).__init__(*args, **kwargs)
-        if 'instance' in kwargs and kwargs['instance'] is not None:
-            colaborador = kwargs['instance']
-            self.initial['matriculas'] = "\n".join ( str(m.numero) for m in colaborador.matriculas.all() ) 
- 
-    def save(self, *args, **kwargs):
-        s = super(ColaboradorForm, self).save(*args, **kwargs)
-        matriculas_post = self.cleaned_data['matriculas'].split('\n')        
 
-        self.instance.matriculas.all().delete()
-        self.instance.save()
-        for numero_a_salvar in matriculas_post:
-            if numero_a_salvar:
-                matricula = Matricula()
-                matricula.numero = somente_numeros(numero_a_salvar)
-                matricula.colaborador = self.instance
-                #matricula.colaborador.save()
-               
-                matricula.save()
-        return s     
-    
+
     def clean_pis(self, *args, **kwargs):
         pis = (somente_numeros(self.cleaned_data['pis'])) 
         valido = validate_pis(pis)               
