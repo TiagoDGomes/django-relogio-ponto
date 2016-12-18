@@ -10,6 +10,8 @@ from core.tests import prepare
 from core import models
 from django.db.models import Q
 from core.forms import ColaboradorForm
+import os
+from settings import BASE_DIR
         
         
 class TestPaginaInicialSemAutenticar(TestCase):
@@ -232,6 +234,14 @@ class TestColaboradorInvalido(prepare.PrepararParaUsarColaboradores):
         
                      
                     
+class TestImportarArquivoCSVInvalido(prepare.PrepararParaCriarUsuarioAdminLogado):    
+    def test_resposta(self): 
+        with open(os.path.join(BASE_DIR, 'dummy.png')) as csv_file: 
+            self.response = self.client.post(reverse('importar_arquivo_csv'), {'arquivo_csv': csv_file}) 
+        self.assertContains(self.response, 'Arquivo CSV inválido')    
+        
+        
+               
 class TestImportarArquivoCSV(prepare.PrepararParaImportacao):    
     def test_resposta(self):        
         self.assertEquals(Colaborador.objects.filter(nome__contains=' VALIDO').count(), self.total_validos)

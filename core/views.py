@@ -67,7 +67,11 @@ def importar_arquivo_csv(request):
     title = 'Colaboradores'
     has_permission = True
     user = request.user  
-    file_string = handle_uploaded_file(request.FILES['arquivo_csv']) 
+    try:
+        file_string = handle_uploaded_file(request.FILES['arquivo_csv'])
+    except:
+        erros.append('Arquivo CSV inválido.')
+        return render(request, 'return_importacao.html', locals()) 
     if ',' in file_string:
         separador = ','
     elif '\t' in file_string:
