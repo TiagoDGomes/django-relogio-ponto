@@ -3,4 +3,4 @@ python-decouple
 mechanize
 BeautifulSoup
 cachetools
-brazilnum
+django-after-response
