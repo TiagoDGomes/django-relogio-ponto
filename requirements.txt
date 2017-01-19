@@ -4,3 +4,4 @@ mechanize
 BeautifulSoup
 cachetools
 django-after-response
+brazilnum
