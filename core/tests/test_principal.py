@@ -22,14 +22,28 @@ class TestPaginaInicialSemAutenticar(TestCase):
         self.assertEqual(302, self.response.status_code) 
         
        
-class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):    
+class TestPaginaPrincipalRedirect(prepare.PrepararParaTerUsuarioLogado):
+ 
     def test_302(self):
         self.assertEqual(302, self.response.status_code) 
-        self.assertRedirects(self.response, reverse('admin:index'))
-
-
-        
+        self.assertRedirects(self.response, reverse('admin:index'))   
+                     
     
+class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):
+    def setUp(self):
+        super(TestPaginaPrincipal, self).setUp()
+        self.response = self.client.get(reverse('admin:index')) 
+
+    def test_200(self):
+        self.assertEqual(200, self.response.status_code)              
+    
+    def test_pagina(self):
+        self.assertTemplateUsed(self.response, template_name="part/ferramentas_part.html")
+        self.assertTemplateUsed(self.response, template_name="part/exportar_part.html")
+        self.assertContains(self.response, text='value="Gerar"')
+        self.assertContains(self.response, text='name="formato"')
+        self.assertContains(self.response, text='csrfmiddlewaretoken',count=2)
+        
 
         
 class TestLogout(prepare.PrepararParaTerUsuarioLogado):    
@@ -38,13 +52,7 @@ class TestLogout(prepare.PrepararParaTerUsuarioLogado):
         self.assertEqual(302, self.response.status_code)
         self.assertRedirects(self.response, '%s?next=%s' % (reverse('admin:login'), reverse('index')))
         user = auth.get_user(self.client)   
-        self.assertFalse(user.is_authenticated())   
-        
-        
-        
-
-
-        
+        self.assertFalse(user.is_authenticated())           
        
 
         

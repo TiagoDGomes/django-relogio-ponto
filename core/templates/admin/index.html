@@ -12,6 +12,7 @@
 {% block content %}
 <div id="content-main">
 {% if form_gerar_arquivo %}
+    {% include 'part/ferramentas_part.html' %}
 	{% include 'part/exportar_part.html' %}
 {% endif %}
 {% if app_list %}
