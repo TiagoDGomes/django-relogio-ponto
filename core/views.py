@@ -15,6 +15,7 @@ from brazilnum.pis import validate_pis
 from django.views.generic.base import TemplateView
 
 
+
 def site_logout(request):
     logout(request)
     return HttpResponseRedirect('%s?next=%s' % (reverse('admin:login'), reverse('index')))
@@ -116,6 +117,7 @@ def handle_uploaded_file(rf):
         content ='{0}{1}'.format(content, chunk_decode)
     return content
 
+
 def exportar_para_relogio(request):
     form_exportar_para_relogio = ExportarParaRelogioForm(request.POST)
     if form_exportar_para_relogio.is_valid():
@@ -129,6 +131,7 @@ def exportar_para_relogio(request):
 class WelcomeAdminView(TemplateView):
     template_name = 'admin/index.html'
 
+    
     def get(self, request, *args, **kwargs):        
         from core.sites import admin_site
         form_gerar_arquivo = GerarArquivoForm()
