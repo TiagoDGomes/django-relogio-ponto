@@ -38,11 +38,17 @@ h1, h2, h3, h4, h5, h6 {
 	line-height: inherit
 }
 .panel-heading{
-	background-color: #79aec8 !important;
 	color: white !important;
 	text-transform: uppercase;
-
+	padding: 1px 9px;
 }
 .panel-heading h4{
 	font-weight: normal;
+}
+.module caption, .panel-heading, fieldset h2{	
+	background: rgb(67, 95, 109) !important;
+	color: white !important;
+}
+.panel-default, .module {
+    border: 1px solid black !important;
 }
