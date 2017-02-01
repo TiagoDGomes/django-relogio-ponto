@@ -43,9 +43,19 @@ class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):
         self.assertContains(self.response, text='value="Gerar"')
         self.assertContains(self.response, text='name="formato"')
         self.assertContains(self.response, text='csrfmiddlewaretoken',count=2)
+        self.assertContains(self.response, text=reverse('recuperar_batidas'))
         
 
+class TestPaginaRecuperarBatidas(prepare.PrepararParaTerUsuarioLogado):
+    def setUp(self):
+        super(TestPaginaRecuperarBatidas, self).setUp()
+        self.response = self.client.get(reverse('recuperar_batidas'))   
+    
+    def test_retorno(self):
+        self.assertEqual(200, self.response.status_code)
+        self.assertContains(self.response, text="status")
         
+         
 class TestLogout(prepare.PrepararParaTerUsuarioLogado):    
     def test_logout(self):
         self.response = self.client.get(reverse('site_logout'))   

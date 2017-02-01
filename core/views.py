@@ -13,6 +13,7 @@ from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from brazilnum.pis import validate_pis
 from django.views.generic.base import TemplateView
+from core.util import update_afd
 
 
 
@@ -51,6 +52,13 @@ def gerar_arquivo(request):
     else:
         response = HttpResponseForbidden(_('Requisição inválida.'))
     return response
+
+
+@login_required
+def recuperar_batidas(request):
+    update_afd()
+    return HttpResponse("status") 
+
 
 
 @login_required

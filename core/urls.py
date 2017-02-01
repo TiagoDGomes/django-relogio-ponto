@@ -14,6 +14,7 @@ admin.site.site_url = None
 
 urlpatterns = [
     url(r'^gerar_arquivo$', views.gerar_arquivo, name='gerar_arquivo' )  , 
+    url(r'^recuperar_batidas$', views.recuperar_batidas, name='recuperar_batidas' )  , 
     url(r'^importar_arquivo_csv$', views.importar_arquivo_csv, name='importar_arquivo_csv' )  , 
     url(r'^exportar_para_relogio$', views.exportar_para_relogio, name='exportar_para_relogio' )  , 
     url(r'^salvar_colaborador$', views.salvar_colaboradores, name='salvar_colaboradores' )  , 
