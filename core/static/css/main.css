@@ -22,7 +22,8 @@
 	height: 60px !important
 }
 .dashboard #content {
-    width: 100%; 
+    min-width: 1000px;
+    margin: 0 auto;
 }
 #content-related{
 	float: inherit;
