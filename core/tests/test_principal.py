@@ -53,7 +53,8 @@ class TestPaginaRecuperarBatidas(prepare.PrepararParaTerUsuarioLogado):
     
     def test_retorno(self):
         self.assertEqual(200, self.response.status_code)
-        self.assertContains(self.response, text="status")
+        self.assertEquals(self.response['Content-Type'], "application/json")        
+        self.assertContains(self.response, text="{")
         
          
 class TestLogout(prepare.PrepararParaTerUsuarioLogado):    

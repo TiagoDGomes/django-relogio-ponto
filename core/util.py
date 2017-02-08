@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
-
 import string
-from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
+
 
 def somente_numeros(texto):
     all = string.maketrans('','')
@@ -11,21 +11,20 @@ def somente_numeros(texto):
 
 def update_afd(*args, **kwargs):
     from core import models
+    registros_all = []
     for relogio_reg in models.RelogioPonto.objects.all():
-        relogio_rep = relogio_reg.get_rep()
-        for registro in relogio_rep.get_registros():
-            if registro['tipo'] == 3:
-                print registro
-                pis = str(int(somente_numeros(registro['colaborador'].pis)))
-                data_hora = registro['data_marcacao']
-                try:                        
-                    colaborador = models.Colaborador.objects.get(pis=pis)
-                    novo_registro = models.RegistroPonto.objects.get_or_create(relogio=relogio_reg,
-                                                                        colaborador=colaborador,
-                                                                        data_hora=data_hora,
-                                                                        )[0]
-                    novo_registro.save()
-                except ObjectDoesNotExist:
-                    pass
-                except Exception as e:
-                    print e
+        registros_all.append(relogio_reg.atualizar_registros())        
+    return registros_all
+
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, datetime):
+        serial = obj.isoformat()
+        return serial
+    return str(obj)
+    #raise TypeError ("Type not serializable: %s" % type(obj))
+            
+        

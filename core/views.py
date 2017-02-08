@@ -5,7 +5,7 @@ from core.forms import GerarArquivoForm,  ColaboradorFormSet,\
     ExportarParaRelogioForm
 from django.contrib.auth import logout
 from django.http.response import HttpResponse, HttpResponseForbidden,\
-    HttpResponseRedirect
+    HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
 from core.models import Colaborador, Matricula
@@ -13,7 +13,9 @@ from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from brazilnum.pis import validate_pis
 from django.views.generic.base import TemplateView
-from core.util import update_afd
+from core.util import update_afd, json_serial
+from bsddb.test.test_pickle import cPickle
+import json
 
 
 
@@ -56,8 +58,15 @@ def gerar_arquivo(request):
 
 @login_required
 def recuperar_batidas(request):
-    update_afd()
-    return HttpResponse("status") 
+    res = {'result': update_afd() }  
+    try:
+        res = {'result': update_afd() }        
+    except Exception as e:
+        res = {'error': e.message}
+        
+    json_data = json.dumps(res, default=json_serial)
+    
+    return JsonResponse(json_data, safe=False) 
 
 
 

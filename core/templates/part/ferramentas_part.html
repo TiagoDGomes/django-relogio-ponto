@@ -1,21 +1,36 @@
-<div class="panel panel-default">
+{% load static %}<div class="panel panel-default">
 	<div class="panel-heading">
 		<h4>Ferramentas</h4>
 	</div>
 	<div class="panel-body">
-
-		<form method="post" action="{% url 'recuperar_batidas' %}">
+		
+		<form onsubmit="return recuperar_batidas()" method="post" action="{% url 'recuperar_batidas' %}">
 		
 		{% csrf_token %}
 		<div class="row">
 			<div class="col-md-2">
-			<input type="submit" value="Recuperar batidas">
+			<input id="btn_recuperar_batidas" type="submit" value="Recuperar batidas">
 			</div>
 			<div class="col-md-10">
-				Este comando busca os registros armazenados nos relógios
+				<img id="loading_ultimas_batidas" src="{% static 'img/loading.gif' %}" style="width: 3em; visibility:hidden">
+				Este comando busca as últimas batidas armazenadas nos relógios eletrônicos de ponto.
 			</div>
 		</div>
 			
 		</form>
+		<script>
+			function recuperar_batidas(){
+				$("#btn_recuperar_batidas").prop("disabled",true);
+				$('#loading_ultimas_batidas').css('visibility', 'inherit');
+				$.ajax({
+					url: "{% url 'recuperar_batidas' %}",
+					success: function(ret){		
+						$('#loading_ultimas_batidas').css('visibility', 'hidden');
+						$("#btn_recuperar_batidas").prop("disabled",false);
+					}
+				});
+				return false;
+			}
+		</script>
 	</div>
 </div>

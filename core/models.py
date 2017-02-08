@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from pyRelogioPonto.relogioponto.base import get_rep_suportados
 from core.util import somente_numeros
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Colaborador(models.Model):
@@ -58,11 +59,17 @@ class RelogioPonto(models.Model):
                         parametro.tipo = tipo_valor
                         parametro.relogio = self
                         parametro.save()
+            parametro = Parametro()
+            parametro.propriedade =  'ultimo_nsr'
+            parametro.tipo = int
+            parametro.relogio = self
+            parametro.valor = 0
+            parametro.save()
         return s
     
     def get_rep(self):
         if not self._rep: # se não foi definido            
-            for id_, _, Tipo, parametros in get_rep_suportados():
+            for id_, _, RelogioPontoDevice, parametros in get_rep_suportados():
                 if self.tipo == id_: # se mesmo modelo
                     plist = []                     
                     for propriedade, tipo_valor in parametros:
@@ -72,10 +79,34 @@ class RelogioPonto(models.Model):
                                     plist.append(propriedade + '=' + parametro_local.valor)
                                 else:    
                                     plist.append(propriedade + '="' + parametro_local.valor + '"')
-                    cmd = 'self._rep = Tipo(%s)' % ",".join(plist)                    
+                    cmd = 'self._rep = RelogioPontoDevice(%s)' % ",".join(plist)                    
                     exec cmd
         return self._rep
     
+    def atualizar_registros(self, force=False):
+        ultimo_nsr = self.parametros.get_or_create(propriedade='ultimo_nsr')[0] if not force else None
+        relogio_rep = self.get_rep()
+        registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1)
+        for registro in registros:
+            #print registro
+            if registro['tipo'] == 3:                
+                pis = str(int(somente_numeros(registro['colaborador'].pis)))
+                data_hora = registro['data_marcacao']
+                try:                        
+                    colaborador = Colaborador.objects.get(pis=pis)
+                    novo_registro = RegistroPonto.objects.get_or_create(relogio=self,
+                                                                        colaborador=colaborador,
+                                                                        data_hora=data_hora,
+                                                                        )[0]
+                    novo_registro.save()
+                except ObjectDoesNotExist:
+                    pass
+                except Exception as e:
+                    print e
+        
+        ultimo_nsr.valor = relogio_rep.quantidade_eventos_registrados
+        ultimo_nsr.save() 
+        return registros           
      
 
 
