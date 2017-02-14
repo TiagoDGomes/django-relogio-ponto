@@ -1,4 +1,6 @@
-{% load static %}<div class="panel panel-default">
+{% load static %}
+
+<div class="panel panel-default">
 	<div class="panel-heading">
 		<h4>Ferramentas</h4>
 	</div>
@@ -24,7 +26,16 @@
 				$('#loading_ultimas_batidas').css('visibility', 'inherit');
 				$.ajax({
 					url: "{% url 'recuperar_batidas' %}",
-					success: function(ret){		
+					success: function(ret){
+						
+						if (ret.error !== undefined){
+							alert("Um erro ocorreu durante a recuperação das batidas de ponto:\n" + ret.error);
+						} 
+						$('#loading_ultimas_batidas').css('visibility', 'hidden');
+						$("#btn_recuperar_batidas").prop("disabled",false);
+					},
+					error: function(ret, e){
+						alert("Erro ao executar a recuperação das batidas: \n", ret);
 						$('#loading_ultimas_batidas').css('visibility', 'hidden');
 						$("#btn_recuperar_batidas").prop("disabled",false);
 					}
