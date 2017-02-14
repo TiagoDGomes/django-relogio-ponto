@@ -13,9 +13,6 @@ from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from brazilnum.pis import validate_pis
 from django.views.generic.base import TemplateView
-from core.util import update_afd, json_serial
-from bsddb.test.test_pickle import cPickle
-import json
 
 
 
@@ -48,26 +45,23 @@ def gerar_arquivo(request):
     if form.is_valid():   
         dados = form.gerar()
         if not dados:
-            return HttpResponseRedirect(reverse('admin:index') + '?nr=1' )     
-        response = HttpResponse(dados, content_type='application/force-download')
-        response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
+            return HttpResponseRedirect(reverse('admin:index') + '?nr=1' )  
+        else:   
+            response = HttpResponse(dados, content_type='application/force-download')
+            response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
     else:
         response = HttpResponseForbidden(_('Requisição inválida.'))
     return response
 
 
 @login_required
-def recuperar_batidas(request):
-    res = {'result': update_afd() }  
+def recuperar_batidas(request):    
     try:
-        res = {'result': update_afd() }        
-    except Exception as e:
-        res = {'error': e.message}
-        
-    json_data = json.dumps(res, default=json_serial)
-    
-    return JsonResponse(json_data, safe=False) 
-
+        registros = update_afd() 
+        res = {'result': registros}        
+    except Exception, e:
+        res = {'error': repr(e)}
+    return JsonResponse(res, safe=False) 
 
 
 @login_required
@@ -77,6 +71,7 @@ def salvar_colaboradores(request):
         form_colaboradores.save()
         return HttpResponseRedirect(reverse('colaboradores') + '?salvo=1')
     return colaboradores(request)
+
 
 @login_required
 def importar_arquivo_csv(request):

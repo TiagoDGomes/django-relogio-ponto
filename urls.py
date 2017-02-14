@@ -20,6 +20,6 @@ from core.sites import admin_site
 urlpatterns = [
     url(r'^ponto/sistema/', admin_site.urls),
     url(r'^ponto/', include('core.urls')),
-    url(r'^', include('core.urls')),
+    #url(r'^', include('core.urls')),
     
 ]

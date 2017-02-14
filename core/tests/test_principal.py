@@ -229,14 +229,14 @@ class TestObterRegistros(prepare.PrepararParaUsarColaboradores):
                                                                     'fim': '01/01/2000', 
                                                                     'formato': 'default',
                                                                     })
-        redir_url = reverse('admin:index') + '?nr=1'
-        self.assertRedirects(self.response, redir_url)
-        self.assertEqual(302, self.response.status_code)  
+        #redir_url = reverse('admin:index') + '?nr=1'
+        #self.assertRedirects(self.response, redir_url)
+        #self.assertEqual(302, self.response.status_code)  
         
         
          
-        self.assertFalse('Content-Disposition' in self.response) 
-        self.response = self.client.get(redir_url)
+        #self.assertFalse('Content-Disposition' in self.response) 
+        #self.response = self.client.get(redir_url)
         self.assertContains(self.response , 'Não há registros no período selecionado.') 
         
 
