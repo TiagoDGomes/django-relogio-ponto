@@ -14,7 +14,7 @@
 	<div class="panel-body">
 		<form action="{% url 'importar_arquivo_csv' %}" method="post" enctype="multipart/form-data">
 			<div class="row">
-				<div class="col-sm-4">Importar usuários por arquivo CSV:</div>
+				<div class="col-sm-4">Importar lista de colaboradores de um arquivo CSV para o sistema:</div>
 				<div class="col-sm-6">
 					{% csrf_token %} 
 					<input name="arquivo_csv" type="file" class="btn">
@@ -33,10 +33,10 @@
 	<div class="panel-body">
 		<form action="{% url 'exportar_para_relogio' %}" method="post">
 			<div class="row">
-				<div class="col-sm-4">Exportar todos os usuários para relógio:</div>
+				<div class="col-sm-4">Exportar lista de colaboradores do sistema para um relógio:</div>
 				<div class="col-sm-6">
 					{% csrf_token %} 
-					{{ form_exportar_para_relogio.relogio }}
+					{{ form_exportar_para_relogio.relogio.label }}: {{ form_exportar_para_relogio.relogio }}
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Exportar" class="btn btn-primary">
