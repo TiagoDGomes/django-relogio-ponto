@@ -58,7 +58,7 @@ class RegistroPontoInline(admin.TabularInline):
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
-    inlines = [MatriculaInline, RegistroPontoInline,]    
+    inlines = [MatriculaInline, ]    
     list_display = ['nome', 'pis','verificar_digital','get_matriculas']
     form = ColaboradorForm
     fieldsets = [
