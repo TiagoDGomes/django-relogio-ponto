@@ -68,7 +68,8 @@ class ExportarParaRelogioForm(forms.Form):
             colaborador_rep = relogioponto.base.Colaborador(relogio_rep)
             colaborador_rep.nome = colaborador.nome
             colaborador_rep.pis = colaborador.pis
-            colaborador_rep.matriculas = (m['numero'] for m in colaborador.matriculas.values('numero') )            
+            for m in colaborador.matriculas.values('numero'):
+                colaborador_rep.matriculas.append(m['numero'])            
             try:
                 self._salvar_em_rep(colaborador_rep) 
                 salvos.append(colaborador)
