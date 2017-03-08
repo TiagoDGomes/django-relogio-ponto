@@ -4,6 +4,7 @@ from django.db import models
 from pyRelogioPonto.relogioponto.base import get_rep_suportados
 from core.util import somente_numeros
 from django.core.exceptions import ObjectDoesNotExist
+from pprint import pprint
 
 
 class Colaborador(models.Model):
@@ -84,11 +85,14 @@ class RelogioPonto(models.Model):
         return self._rep
     
     def atualizar_registros(self, force=False):
-        ultimo_nsr = self.parametros.get_or_create(propriedade='ultimo_nsr')[0] if not force else None
+        ultimo_nsr = self.parametros.get_or_create(propriedade='ultimo_nsr')[0] 
         relogio_rep = self.get_rep()
-        registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1)
-        for registro in registros:
-            #print registro
+        if not force:
+            registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1)
+        else:
+            registros = relogio_rep.get_registros()
+
+        for registro in registros:            
             if registro['tipo'] == 3:                
                 pis = str(int(somente_numeros(registro['colaborador'].pis)))
                 data_hora = registro['data_marcacao']
@@ -98,6 +102,7 @@ class RelogioPonto(models.Model):
                                                                         colaborador=colaborador,
                                                                         data_hora=data_hora,
                                                                         )[0]
+                    pprint(novo_registro)
                     novo_registro.save()
                 except ObjectDoesNotExist:
                     pass

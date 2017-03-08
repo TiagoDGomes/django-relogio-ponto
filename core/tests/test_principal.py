@@ -80,7 +80,7 @@ class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):
         
         
         
-        self.assertContains(self.response, text="<input ",  count=5)          
+        self.assertContains(self.response, text="<input ",  count=6)          
         
         self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
         self.assertContains(self.response, text=reverse('exportar_para_relogio'))

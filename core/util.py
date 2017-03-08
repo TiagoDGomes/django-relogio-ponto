@@ -13,7 +13,11 @@ def update_afd(*args, **kwargs):
     from core import models
     registros_all = []
     for relogio_reg in models.RelogioPonto.objects.all():
-        registros_all.append(relogio_reg.atualizar_registros())        
+        if 'force' in kwargs:
+            r = relogio_reg.atualizar_registros(force=True)
+        else:
+            r = relogio_reg.atualizar_registros()
+        registros_all.append(r)        
     return registros_all
 
 

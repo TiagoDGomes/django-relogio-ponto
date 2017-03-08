@@ -16,6 +16,11 @@
 			<div class="col-md-10">
 				<img id="loading_ultimas_batidas" src="{% static 'img/loading.gif' %}" style="width: 3em; visibility:hidden">
 				Este comando busca as últimas batidas armazenadas nos relógios eletrônicos de ponto.
+				<br>
+				<span style="width: 3em; display:inline-block"></span>
+				<input id="rb_force" type="checkbox" name="force">
+				<span style="font-size: 0.8em">Incluir registros antigos (<b>Nota:</b> com esta opção, o processo pode demorar)</span>
+				
 			</div>
 		</div>
 			
@@ -24,8 +29,12 @@
 			function recuperar_batidas(){
 				$("#btn_recuperar_batidas").prop("disabled",true);
 				$('#loading_ultimas_batidas').css('visibility', 'inherit');
+				var rb_force = '';
+				if ($("#rb_force:checked").length > 0){
+					rb_force = '?force=1';
+				}
 				$.ajax({
-					url: "{% url 'recuperar_batidas' %}",
+					url: "{% url 'recuperar_batidas' %}" + rb_force,
 					success: function(ret){
 						
 						if (ret.error !== undefined){
