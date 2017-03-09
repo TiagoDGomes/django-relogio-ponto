@@ -4,27 +4,42 @@
 	<div class="panel-heading">
 		<h4>Ferramentas</h4>
 	</div>
-	<div class="panel-body">
-		
-		<form onsubmit="return recuperar_batidas()" method="post" action="{% url 'recuperar_batidas' %}">
-		
-		{% csrf_token %}
+	<div class="panel-body ferramentas">
 		<div class="row">
-			<div class="col-md-2">
-			<input id="btn_recuperar_batidas" type="submit" value="Recuperar batidas">
-			</div>
-			<div class="col-md-10">
-				<img id="loading_ultimas_batidas" src="{% static 'img/loading.gif' %}" style="width: 3em; visibility:hidden">
-				Este comando busca as últimas batidas armazenadas nos relógios eletrônicos de ponto.
-				<br>
-				<span style="width: 3em; display:inline-block"></span>
-				<input id="rb_force" type="checkbox" name="force">
-				<span style="font-size: 0.8em">Incluir registros antigos (<b>Nota:</b> com esta opção, o processo pode demorar)</span>
-				
-			</div>
-		</div>
+			<form onsubmit="return recuperar_batidas()" method="post" action="{% url 'recuperar_batidas' %}">
 			
-		</form>
+			{% csrf_token %}			
+				<div class="col-md-2">
+				<input id="btn_recuperar_batidas" type="submit" value="Recuperar batidas">
+				</div>
+				<div class="col-md-10">
+					
+					<img id="loading_ultimas_batidas" src="{% static 'img/loading.gif' %}" 
+						 class="loading">
+					<span>Este comando busca as últimas batidas armazenadas 
+					nos relógios eletrônicos de ponto.
+					</span>
+					<br>
+					<span>
+					<input id="rb_force" type="checkbox" name="force" style="margin-top:-0.1em">
+					<span style="font-size: 0.8em;padding-top:0.5em">Incluir registros antigos (<b>Nota:</b> com esta opção, o processo pode demorar)</span>
+					
+					</span>					
+				</div>
+			</form>
+		</div>
+		<div class="row">
+			<form method="get" action="{% url 'colaboradores' %}">			
+				<div class="col-md-2">
+					<input type="submit" value="Importar/exportar">
+					</div>
+					<div class="col-md-10">
+						<img src="{% static 'img/loading.gif' %}" class="loading">
+						Assistente para importação e exportação de dados de colaboradores
+				</div>
+			
+			</form>
+		</div>
 		<script>
 			function recuperar_batidas(){
 				$("#btn_recuperar_batidas").prop("disabled",true);

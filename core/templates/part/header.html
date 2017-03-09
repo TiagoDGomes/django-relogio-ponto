@@ -12,20 +12,4 @@
 		<script src="{% static 'js/jquery.bootpag.min.js' %}"></script>
 		<script src="{% static 'locales/bootstrap-datepicker.pt-BR.min.js' %}"></script>
 		<script src="{% static 'jsimplespreadsheet/jsimplespreadsheet.js' %}"></script>
-		<script>
-			$(document).ready(function(){
-				var tab;
-				switch(window.location.pathname){
-					case '{% url "colaboradores" %}':
-						tab = 'tab-colaboradores';
-						break;
-					case '{% url "index" %}':					
-						tab = 'tab-exportar';
-						break;
-					default:
-						tab = '';
-						
-				}
-				$('#' + tab).addClass('active');
-			});
-		</script>	
+			

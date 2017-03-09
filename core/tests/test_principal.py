@@ -40,6 +40,8 @@ class TestPaginaPrincipal(prepare.PrepararParaTerUsuarioLogado):
     def test_pagina(self):
         self.assertTemplateUsed(self.response, template_name="part/ferramentas_part.html")
         self.assertTemplateUsed(self.response, template_name="part/exportar_part.html")
+        self.assertContains(self.response, text=reverse('colaboradores'), count=1)
+        self.assertContains(self.response, text='name="force"')
         self.assertContains(self.response, text='value="Gerar"')
         self.assertContains(self.response, text='name="formato"')
         self.assertContains(self.response, text='name=\'csrfmiddlewaretoken',count=2)
@@ -80,7 +82,7 @@ class TestPaginaColaborador(prepare.PrepararParaUsarColaboradores):
         
         
         
-        self.assertContains(self.response, text="<input ",  count=6)          
+        self.assertContains(self.response, text="<input ",  count=5)          
         
         self.assertContains(self.response, text=reverse('importar_arquivo_csv'))
         self.assertContains(self.response, text=reverse('exportar_para_relogio'))
