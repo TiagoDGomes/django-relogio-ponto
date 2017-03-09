@@ -46,10 +46,46 @@ h1, h2, h3, h4, h5, h6 {
 .panel-heading h4{
 	font-weight: normal;
 }
-.module caption, .panel-heading, fieldset h2{	
-	background: rgb(67, 95, 109) !important;
-	color: white !important;
-}
+
 .panel-default, .module {
     border: 1px solid black !important;
+}
+.ferramentas .row{
+	border-bottom: 1px solid silver;
+	padding: 0.6em 0 1em 0;
+}
+.ferramentas .row img.loading{
+	width: 3em; 
+	visibility:hidden;
+	float:left;
+}
+
+#header,
+.module caption, .panel-heading, fieldset h2{
+	background-color: #8cc63e !important;	
+}
+
+.ferramentas .button, 
+.panel-body input[type=submit], .panel-body  input[type=button], .submit-row input, a.button,
+.object-tools a:focus, .object-tools a:hover{
+	background-color: #77a736 !important;	
+}
+
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited,
+#user-tools,.breadcrumbs,
+.module caption, .panel-heading, fieldset h2{
+	color: white !important;
+}
+.breadcrumbs,
+.module h2, .module caption, .inline-group h2{
+	background-color: #88b54a !important;	
+}
+a:link, a:visited,  #changelist-filter li.selected a{
+    color: #449d44;
+    text-decoration: none;
+}
+
+a:hover, div.breadcrumbs a:focus, div.breadcrumbs a:hover{
+	color: #1b711b;
 }
