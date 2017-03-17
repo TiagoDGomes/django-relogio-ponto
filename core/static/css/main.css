@@ -66,7 +66,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ferramentas .button, 
-.panel-body input[type=submit], .panel-body  input[type=button], .submit-row input, a.button,
+.panel-body input[type=submit], 
+.panel-body  input[type=button],
+.submit-row input, a.button,
 .object-tools a:focus, .object-tools a:hover{
 	background-color: #77a736 !important;	
 }

@@ -17,7 +17,8 @@
 				<div class="col-sm-4">Importar lista de colaboradores de um arquivo CSV para o sistema:</div>
 				<div class="col-sm-6">
 					{% csrf_token %} 
-					<input name="arquivo_csv" type="file" class="btn">
+					<input name="arquivo_csv" type="file" class="btn"><br>
+					<p><b>Formato:</b> nome, pis, matricula</p>
 				</div>
 				<div class="col-sm-2">
 					<input type="submit" value="Importar" class="btn btn-primary">
