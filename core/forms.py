@@ -73,8 +73,6 @@ class ExportarParaRelogioForm(forms.Form):
             try:
                 self._salvar_em_rep(colaborador_rep) 
                 salvos.append(colaborador)
-            except RelogioPontoException as e:
-                erros.append("{0} - {1}".format(colaborador, e.message))
             except HTTPError as httperr:
                 warn(httperr.message)
                 time.sleep(1)                
@@ -84,6 +82,9 @@ class ExportarParaRelogioForm(forms.Form):
                     salvos.append(colaborador)
                 except Exception as ex:
                     erros.append("{0} - {1}".format(colaborador, ex.message))
+            except Exception as e:
+                erros.append("{0} - {1}".format(colaborador, e.message))
+                
         return salvos, erros  
               
     def _salvar_em_rep(self, colaborador_rep):                    

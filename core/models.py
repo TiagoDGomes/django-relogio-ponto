@@ -10,7 +10,7 @@ from pprint import pprint
 class Colaborador(models.Model):
     nome = models.CharField(max_length=100)
     pis = models.CharField(max_length=25, unique=True, verbose_name='PIS')
-    verificar_digital = models.NullBooleanField()
+    verificar_digital = models.BooleanField(default=True, null=False, blank=False)
     
     class Meta:
         verbose_name_plural = 'colaboradores'
