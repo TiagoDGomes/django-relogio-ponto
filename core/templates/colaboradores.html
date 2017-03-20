@@ -34,14 +34,25 @@
 	<div class="panel-body">
 		<form action="{% url 'exportar_para_relogio' %}" method="post">
 			<div class="row">
-				<div class="col-sm-4">Exportar lista de colaboradores do sistema para um relógio:</div>
-				<div class="col-sm-6">
+				<div class="col-sm-4">Exportar lista de colaboradores do sistema para relógio:</div>
+				<div class="col-sm-8">
+					Vá para a 
+					<strong>
+					<a href="{% url 'admin:core_colaborador_changelist' %}">página de colaboradores</a>
+					</strong>
+					e selecione quais serão exportados. 
+					<br>Depois disso,
+					escolha a ação <strong>'Salvar selecionados em todos os relógios'</strong>
+					 e clique em <strong>'Ir'</strong>. 
+				</div>
+				<!-- <div class="col-sm-6">
 					{% csrf_token %} 
 					{{ form_exportar_para_relogio.relogio.label }}: {{ form_exportar_para_relogio.relogio }}
-				</div>
+				</div> 
+				
 				<div class="col-sm-2">
 					<input type="submit" value="Exportar" class="btn btn-primary">
-				</div>
+				</div>-->
 			</div>
 		</form>
 	</div>
