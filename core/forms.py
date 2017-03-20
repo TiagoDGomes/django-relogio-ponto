@@ -5,7 +5,7 @@ from django.forms import widgets
 from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto,\
     Parametro
 from django.forms.widgets import Textarea
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 from pyRelogioPonto.relogioponto.base import RelogioPontoException
 from core import models
@@ -17,6 +17,10 @@ from urllib2 import HTTPError
 from _warnings import warn
 from django.db.models import Q
 from datetime import datetime
+from pyRelogioPonto.relogioponto.base import Colaborador as ColaboradorREP
+from django.core.exceptions import ValidationError
+import django
+
 
 
 
@@ -96,6 +100,7 @@ class ExportarParaRelogioForm(forms.Form):
 
 
 class ColaboradorForm(forms.ModelForm):
+    salvar_em_relogios = forms.BooleanField(required=False,initial=True, label='Salvar em todos os relógios')
     
     class Meta:
         model = Colaborador
@@ -109,7 +114,10 @@ class ColaboradorForm(forms.ModelForm):
             raise forms.ValidationError ("PIS inválido")
         else:    
             return int(pis)
+    
+    
         
+
     
     
                 
@@ -132,4 +140,16 @@ class ParametroForm(forms.ModelForm):
                 self.fields['valor'] = forms.IntegerField()
         
         
-        
+ 
+class MatriculaInlineFormSet(BaseInlineFormSet):  
+
+    def clean(self):
+        BaseInlineFormSet.clean(self) 
+        for form in self.forms:
+            if 'matriculas-0-DELETE' in form.data:
+                raise ValidationError("Você não pode remover a primeira matrícula.")
+            if not form.data['matriculas-0-numero']:
+                raise ValidationError("A primeira matrícula não pode ser vazia.")
+
+
+
