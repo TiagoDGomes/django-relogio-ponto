@@ -6,12 +6,9 @@ from core.models import RelogioPonto, Colaborador, Parametro, Matricula,\
 from django.utils.translation import ugettext_lazy as _
 from core.forms import ParametroForm, ColaboradorForm, MatriculaInlineFormSet
 from settings import STATIC_URL
-from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from core.sites import admin_site
-from pyRelogioPonto.relogioponto.base import Colaborador as ColaboradorREP
-
 
 
 
@@ -60,7 +57,14 @@ class RegistroPontoInline(admin.TabularInline):
     fields = ['data_hora', 'relogio', 'exportado' ]
     can_delete = False
     fieldsets = []
-    
+
+
+def salvar_em_relogios(modeladmin, request, queryset):
+    #queryset.update(parecer='Aprovado')
+    for colaborador in queryset.all():
+        colaborador.salvar_em_relogios()
+salvar_em_relogios.short_description = "Salvar selecionados em todos os relógios"
+ 
         
 @admin.register(Colaborador)
 class ColaboradorAdmin(admin.ModelAdmin):
@@ -82,6 +86,12 @@ class ColaboradorAdmin(admin.ModelAdmin):
               STATIC_URL + 'js/colaborador_admin.js',              
               )
     
+    actions = (salvar_em_relogios,)
+    def get_actions(self, request):
+        actions = super(ColaboradorAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        
+        return actions 
     
     def get_matriculas(self, obj):
         matriculas =  (str(x['numero']) for x in obj.matriculas.values('numero'))
@@ -89,32 +99,10 @@ class ColaboradorAdmin(admin.ModelAdmin):
     get_matriculas.allow_tags = True
     get_matriculas.short_description = _('matrículas')
     
+    
     def save_related(self, request, form, formsets, change):
         admin.ModelAdmin.save_related(self, request, form, formsets, change)
-        #for formset in formsets:
-        matriculas = form.instance.matriculas.all()
-        colaborador = form.instance
-        
-        for relogio in RelogioPonto.objects.all():
-            rep =  relogio.get_rep() 
-            try:               
-                colREP = rep.colaboradores.filter(pis=colaborador.pis)[0]
-                if not colREP:
-                    colREP = ColaboradorREP(rep)
-                    print 'O colaborador não existe'
-                else:
-                    print 'existe colaborador'
-            except:
-                colREP = ColaboradorREP(rep)
-            colREP.nome = colaborador.nome
-            colREP.pis = colaborador.pis
-            colREP.verificar_digital = colaborador.verificar_digital
-            colREP.matriculas = [] 
-            for m in colaborador.matriculas.all():
-                colREP.matriculas.append(int(m.numero))
-            print colREP.matriculas
-            colREP.save()
-            
+        form.instance.salvar_em_relogios()
         
 
 admin_site.register(Colaborador, ColaboradorAdmin)

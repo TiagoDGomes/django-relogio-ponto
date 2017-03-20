@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
-from pyRelogioPonto.relogioponto.base import get_rep_suportados
+from pyRelogioPonto.relogioponto.base import get_rep_suportados, \
+                                Colaborador as ColaboradorREP
 from core.util import somente_numeros
 from django.core.exceptions import ObjectDoesNotExist
 from pprint import pprint
@@ -18,6 +19,28 @@ class Colaborador(models.Model):
            
     def __str__(self):
         return "{0} ({1})".format(self.nome, self.pis)
+    
+    def salvar_em_relogios(self, relogios=[]):
+        if not relogios:
+            relogios = RelogioPonto.objects.all()
+
+        
+        for relogio in relogios:
+            rep =  relogio.get_rep() 
+            try:               
+                colREP = rep.colaboradores.filter(pis=self.pis)[0]
+                if not colREP:
+                    colREP = ColaboradorREP(rep)
+            except:
+                colREP = ColaboradorREP(rep)
+            colREP.nome = self.nome
+            colREP.pis = self.pis
+            colREP.verificar_digital = self.verificar_digital
+            colREP.matriculas = [] 
+            for m in self.matriculas.all():
+                colREP.matriculas.append(int(m.numero))
+            print colREP.matriculas
+            colREP.save()
     
     
     
