@@ -4,3 +4,4 @@ mechanize
 BeautifulSoup
 cachetools
 brazilnum
+pyodbc

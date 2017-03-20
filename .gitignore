@@ -5,3 +5,4 @@
 /settings.ini
 /database.sqlite
 /callback_ok
+venv/
