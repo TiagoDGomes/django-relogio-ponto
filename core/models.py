@@ -125,12 +125,10 @@ class RelogioPonto(models.Model):
                                                                         colaborador=colaborador,
                                                                         data_hora=data_hora,
                                                                         )[0]
-                    pprint(novo_registro)
                     novo_registro.save()
                 except ObjectDoesNotExist:
                     pass
-                except Exception as e:
-                    print e
+                
         
         ultimo_nsr.valor = relogio_rep.quantidade_eventos_registrados
         ultimo_nsr.save() 

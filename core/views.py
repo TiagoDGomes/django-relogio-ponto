@@ -8,7 +8,7 @@ from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-from core.models import Colaborador, Matricula
+from core.models import Colaborador, Matricula, RelogioPonto
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from brazilnum.pis import validate_pis
@@ -58,14 +58,22 @@ def gerar_arquivo(request):
 
 @login_required
 def recuperar_batidas(request): 
+    errors = []
     if 'force' in request.GET:   
-        update_afd(force=True)
+        force=True
     else:
-        update_afd()
-         
-    res = {'result': True }  
-    #except Exception as e:
-    #    res = {'error': repr(e)}        
+        force=False
+    
+    for relogio_reg in RelogioPonto.objects.all():
+        try:
+            r = relogio_reg.atualizar_registros(force=force)
+        except Exception as e:
+            errors.append(e.message)
+
+    result = errors != []  
+       
+    res = {'result': result, 'errors': errors }  
+      
     return JsonResponse(res, safe=False) 
 
 
