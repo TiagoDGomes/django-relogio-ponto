@@ -64,7 +64,7 @@ def recuperar_batidas(request):
     else:
         force=False
     
-    for relogio_reg in RelogioPonto.objects.all():
+    for relogio_reg in RelogioPonto.objects.filter(ativo__isnull=False):
         try:
             r = relogio_reg.atualizar_registros(force=force)
         except Exception as e:
