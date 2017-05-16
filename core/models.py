@@ -59,6 +59,7 @@ class RelogioPonto(models.Model):
     CHOICES_TIPOS_RELOGIOS = [(id, nome) for id, nome, tipo, parametros in get_rep_suportados()]  
     nome = models.CharField(max_length=30)
     tipo = models.IntegerField(choices=CHOICES_TIPOS_RELOGIOS)
+    ativo = models.BooleanField(default=True)
     _rep = None
 
     
@@ -112,7 +113,7 @@ class RelogioPonto(models.Model):
         relogio_rep = self.get_rep()
         if not force:
             registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1)
-        else:
+        elif self.ativo:
             registros = relogio_rep.get_registros()
 
         for registro in registros:            
