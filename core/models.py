@@ -9,9 +9,9 @@ from pprint import pprint
 
 
 class Colaborador(models.Model):
-    nome = models.CharField(max_length=100)
-    pis = models.CharField(max_length=25, unique=True, verbose_name='PIS')
-    verificar_digital = models.BooleanField(default=True, null=False, blank=False)
+    nome = models.CharField(max_length=100, help_text='Nome completo do colaborador')
+    pis = models.CharField(max_length=25, unique=True, verbose_name='PIS', help_text='Número do PIS (somente números)')
+    verificar_digital = models.BooleanField(default=True, null=False, blank=False, help_text='Selecione se a pessoa terá ou não que fazer uma autenticação biométrica ao cadastrar')
     
     class Meta:
         verbose_name_plural = 'colaboradores'
@@ -57,9 +57,9 @@ class Matricula(models.Model):
 class RelogioPonto(models.Model):      
     
     CHOICES_TIPOS_RELOGIOS = [(id, nome) for id, nome, tipo, parametros in get_rep_suportados()]  
-    nome = models.CharField(max_length=30)
+    nome = models.CharField(max_length=30, help_text='Um nome simples para identificar o relógio')
     tipo = models.IntegerField(choices=CHOICES_TIPOS_RELOGIOS)
-    ativo = models.BooleanField(default=True)
+    ativo = models.BooleanField(default=True, help_text='Indica se o relógio está ativado, conectado e/ou ligado à rede')
     _rep = None
 
     
@@ -153,7 +153,7 @@ class Parametro(models.Model):
          
 
 class RegistroPonto(models.Model):
-    relogio = models.ForeignKey(RelogioPonto,verbose_name='relógio')
+    relogio = models.ForeignKey(RelogioPonto, verbose_name='relógio', on_delete=models.SET_NULL, null=True, blank=False, )
     colaborador = models.ForeignKey(Colaborador, related_name='registros')
     data_hora = models.DateTimeField(verbose_name='data do registro')
     exportado = models.BooleanField(default=False, verbose_name='registro exportado')

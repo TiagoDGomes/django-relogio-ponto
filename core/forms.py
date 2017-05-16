@@ -48,7 +48,7 @@ class GerarArquivoForm(forms.Form):
         registros = RegistroPonto.objects.filter(
                                                 Q(data_hora__gte=data_inicio)&
                                                 Q(data_hora__lte=data_fim)                                                  
-                                                 )
+                                                 ).order_by('data_hora')
         formato = [('matricula',15), 
                    ('datahora', "%d%m%y%H%M"),
                    ('personalizado','00100100'),
@@ -100,7 +100,7 @@ class ExportarParaRelogioForm(forms.Form):
 
 
 class ColaboradorForm(forms.ModelForm):
-    salvar_em_relogios = forms.BooleanField(required=False,initial=True, label='Salvar em todos os relógios')
+    salvar_em_relogios = forms.BooleanField(required=False,initial=True, label='Salvar em todos os relógios', help_text='Com esta opção, o colaborador será registrado em todos os relógios eletrônicos ativos.')
     
     class Meta:
         model = Colaborador

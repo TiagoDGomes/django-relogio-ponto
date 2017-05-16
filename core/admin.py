@@ -22,7 +22,7 @@ class ParametroInline(admin.TabularInline):
 @admin.register(RelogioPonto)
 class RelogioPontoAdmin(admin.ModelAdmin):
     inlines = [ParametroInline,]
-    list_display = ['nome', 'tipo',]
+    list_display = ['nome', 'tipo', 'ativo', ]
     
     class Media:
         js = (
