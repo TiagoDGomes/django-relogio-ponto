@@ -22,7 +22,7 @@ class Colaborador(models.Model):
     
     def salvar_em_relogios(self, relogios=[]):
         if not relogios:
-            relogios = RelogioPonto.objects.all()
+            relogios = RelogioPonto.objects.filter(ativo__isnull=False)
 
         
         for relogio in relogios:
