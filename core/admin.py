@@ -102,7 +102,7 @@ class ColaboradorAdmin(admin.ModelAdmin):
     
     def save_related(self, request, form, formsets, change):
         admin.ModelAdmin.save_related(self, request, form, formsets, change)
-        form.instance.salvar_em_relogios()
+        form.instance.salvar_em_relogios(form.cleaned_data['salvar_em_relogios'])
         
 
 admin_site.register(Colaborador, ColaboradorAdmin)

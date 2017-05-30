@@ -100,7 +100,10 @@ class ExportarParaRelogioForm(forms.Form):
 
 
 class ColaboradorForm(forms.ModelForm):
-    salvar_em_relogios = forms.BooleanField(required=False,initial=True, label='Salvar em todos os relógios', help_text='Com esta opção, o colaborador será registrado em todos os relógios eletrônicos ativos.')
+    salvar_em_relogios = forms.ModelMultipleChoiceField(RelogioPonto.objects.filter(ativo=True),required=False, 
+                                                   label='Salvar em relógios', 
+                                                   help_text='O colaborador será registrado nos relógios eletrônicos selecionados.', 
+                                                   widget=forms.CheckboxSelectMultiple())
     
     class Meta:
         model = Colaborador
@@ -114,6 +117,13 @@ class ColaboradorForm(forms.ModelForm):
             raise forms.ValidationError ("PIS inválido")
         else:    
             return int(pis)
+    
+    
+    def clean_salvar_em_relogios(self, *args, **kwargs):
+        if not self.instance and self.cleaned_data['salvar_em_relogios']:
+            for relogio in self.cleaned_data['salvar_em_relogios']:
+                if relogio.get_rep().colaboradores.filter(pis=self.cleaned_data['pis']):
+                    raise forms.ValidationError('O "%s" reportou que um colaborador com este PIS já está cadastrado no equipamento.' % relogio.nome )
     
     
         
