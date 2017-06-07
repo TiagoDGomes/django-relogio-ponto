@@ -112,9 +112,9 @@ class RelogioPonto(models.Model):
         ultimo_nsr = self.parametros.get_or_create(propriedade='ultimo_nsr')[0] 
         relogio_rep = self.get_rep()
         if not force:
-            registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1)
+            registros = relogio_rep.get_registros(nsr=int('0'+ultimo_nsr.valor)+1, buscar_colaborador=False)
         elif self.ativo:
-            registros = relogio_rep.get_registros()
+            registros = relogio_rep.get_registros(buscar_colaborador=False)
 
         for registro in registros:            
             if registro['tipo'] == 3:                
