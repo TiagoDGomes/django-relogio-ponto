@@ -32,7 +32,9 @@ class LoginForm(forms.Form):
 class GerarArquivoForm(forms.Form):
     inicio = forms.DateField()
     fim = forms.DateField()
-    formato = forms.ChoiceField(choices=[('default',_('Formato padrão'))], label='Formato')
+    formato = forms.ChoiceField(choices=[('default',_('Formato padrão')),
+                                         ('rapido',_('Formato visualização rápida')),                                         
+                                         ], label='Formato')
     
     @property
     def nome_arquivo(self):
@@ -49,10 +51,16 @@ class GerarArquivoForm(forms.Form):
                                                 Q(data_hora__gte=data_inicio)&
                                                 Q(data_hora__lte=data_fim)                                                  
                                                  ).order_by('data_hora')
-        formato = [('matricula',15), 
-                   ('datahora', "%d%m%y%H%M"),
-                   ('personalizado','00100100'),
-                  ]
+        if self.cleaned_data['formato'] == 'rapido':
+            formato = [('matricula',6), 
+                       ('datahora', " %d/%m/%y %H:%M"),
+                       
+                      ]
+        else:
+            formato = [('matricula',15), 
+                       ('datahora', "%d%m%y%H%M"),
+                       ('personalizado','00100100'),
+                      ]
         resultado = []
         for registro in registros:           
             resultado.append(registro.converter_em_texto(formato))
