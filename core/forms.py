@@ -52,9 +52,8 @@ class GerarArquivoForm(forms.Form):
                                                 Q(data_hora__lte=data_fim)                                                  
                                                  ).order_by('data_hora')
         if self.cleaned_data['formato'] == 'rapido':
-            formato = [('matricula',6), 
-                       ('datahora', " %d/%m/%y %H:%M"),
-                       
+            formato = [('matricula', 5), 
+                       ('datahora', "\t%d/%m/%y\t%H:%M"),                       
                       ]
         else:
             formato = [('matricula',15), 
