@@ -75,7 +75,7 @@ class ColaboradorAdmin(admin.ModelAdmin):
     fieldsets = [
                  ('Informações básicas', {'fields':['nome', 'pis','verificar_digital',]}) ,
                  ('Opções', {'fields': 
-                             ['salvar_em_relogios'] 
+                             ['salvar_em_relogios', 'forcar_sobrescrita'] 
                             } 
                   ),
                     
@@ -102,7 +102,8 @@ class ColaboradorAdmin(admin.ModelAdmin):
     
     def save_related(self, request, form, formsets, change):
         admin.ModelAdmin.save_related(self, request, form, formsets, change)
-        form.instance.salvar_em_relogios(form.cleaned_data['salvar_em_relogios'])
+        relogios_a_salvar = form.cleaned_data['salvar_em_relogios'].all()
+        form.instance.salvar_em_relogios(relogios_a_salvar)
         
 
 admin_site.register(Colaborador, ColaboradorAdmin)

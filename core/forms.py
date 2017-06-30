@@ -111,7 +111,7 @@ class ColaboradorForm(forms.ModelForm):
                                                    label='Salvar em relógios', 
                                                    help_text='O colaborador será registrado nos relógios eletrônicos selecionados.', 
                                                    widget=forms.CheckboxSelectMultiple())
-    
+    forcar_sobrescrita = forms.BooleanField(required=False, label='Forçar sobrescrita/atualização', help_text='Sobrescreve o registro dos colaboradores que já estiverem nos relógios.')
     class Meta:
         model = Colaborador
         fields = '__all__'
@@ -126,12 +126,21 @@ class ColaboradorForm(forms.ModelForm):
             return int(pis)
     
     
-    def clean_salvar_em_relogios(self, *args, **kwargs):
-        if not self.instance and self.cleaned_data['salvar_em_relogios']:
-            for relogio in self.cleaned_data['salvar_em_relogios']:
-                if relogio.get_rep().colaboradores.filter(pis=self.cleaned_data['pis']):
+    def clean(self, *args, **kwargs): 
+        cleaned_data = super(ColaboradorForm, self).clean()
+        relogios_a_salvar = cleaned_data['salvar_em_relogios'].all()
+        for relogio in relogios_a_salvar:
+            pis = str(cleaned_data['pis'])
+            colaboradorInREP = relogio.get_rep().colaboradores.filter(pis=pis)
+            if not cleaned_data['forcar_sobrescrita']: 
+                if colaboradorInREP and not self.instance: 
                     raise forms.ValidationError('O "%s" reportou que um colaborador com este PIS já está cadastrado no equipamento.' % relogio.nome )
-    
+                else:
+                    raise forms.ValidationError('O "%s" reportou que um colaborador precisa ser atualizado (marque a opção "Forçar sobrescrita/atualização").' % relogio.nome ) 
+
+             
+                 
+
     
         
 
