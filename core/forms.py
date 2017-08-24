@@ -129,6 +129,8 @@ class ColaboradorForm(forms.ModelForm):
     def clean(self, *args, **kwargs): 
         cleaned_data = super(ColaboradorForm, self).clean()
         relogios_a_salvar = cleaned_data['salvar_em_relogios'].all()
+        if not 'pis' in cleaned_data:
+            raise forms.ValidationError ("Há problemas com o número do PIS.")  
         for relogio in relogios_a_salvar:
             pis = str(cleaned_data['pis'])
             colaboradorInREP = relogio.get_rep().colaboradores.filter(pis=pis)
