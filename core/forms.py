@@ -133,7 +133,10 @@ class ColaboradorForm(forms.ModelForm):
             raise forms.ValidationError ("Há problemas com o número do PIS.")  
         for relogio in relogios_a_salvar:
             pis = str(cleaned_data['pis'])
-            colaboradorInREP = relogio.get_rep().colaboradores.filter(pis=pis)
+            try:
+                colaboradorInREP = relogio.get_rep().colaboradores.filter(pis=pis)
+            except Exception as e:
+                raise forms.ValidationError('O "%s" reportou erro: %s\nVerifique se o relógio está funcionando corretamente.' % (relogio.nome, e.message ))
             if not cleaned_data['forcar_sobrescrita']: 
                 if colaboradorInREP and not self.instance: 
                     raise forms.ValidationError('O "%s" reportou que um colaborador com este PIS já está cadastrado no equipamento.' % relogio.nome )
