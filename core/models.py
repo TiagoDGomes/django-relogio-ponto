@@ -39,7 +39,7 @@ class Colaborador(models.Model):
             colREP.matriculas = [] 
             for m in self.matriculas.all():
                 colREP.matriculas.append(int(m.numero))
-            print colREP.matriculas
+            
             colREP.save()
     
     
@@ -127,6 +127,7 @@ class RelogioPonto(models.Model):
                                                                         data_hora=data_hora,
                                                                         )[0]
                     novo_registro.save()
+                    print (novo_registro)
                 except ObjectDoesNotExist:
                     pass
                 
