@@ -128,7 +128,7 @@ class ColaboradorForm(forms.ModelForm):
     
     def clean(self, *args, **kwargs): 
         cleaned_data = super(ColaboradorForm, self).clean()
-        relogios_a_salvar = cleaned_data['salvar_em_relogios'].all()
+        relogios_a_salvar = cleaned_data['salvar_em_relogios'].filter(ativo=True)
         if not 'pis' in cleaned_data:
             raise forms.ValidationError ("Há problemas com o número do PIS.")  
         for relogio in relogios_a_salvar:
@@ -143,8 +143,21 @@ class ColaboradorForm(forms.ModelForm):
                 else:
                     raise forms.ValidationError('O "%s" reportou que um colaborador precisa ser atualizado (marque a opção "Forçar sobrescrita/atualização").' % relogio.nome ) 
 
-             
                  
+        #raise ValidationError('Interrompido')
+        '''pis = (somente_numeros(self.cleaned_data['pis'])) 
+        valido = validate_pis(pis)               
+        if not valido:            
+            raise forms.ValidationError ("PIS inválido")
+        else:
+            print self.instance
+            raise ValidationError('Interrompido')
+            try:
+                colaboradorInREP = relogio.get_rep().colaboradores.filter(pis=pis)
+            except Exception as e:
+                raise forms.ValidationError('O "%s" reportou erro: %s\nVerifique se o relógio está funcionando corretamente.' % (relogio.nome, e.message ))
+        '''  
+
 
     
         
