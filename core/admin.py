@@ -9,7 +9,7 @@ from settings import STATIC_URL
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from core.sites import admin_site
-
+from django.urls import reverse
 
 
 class ParametroInline(admin.TabularInline):
@@ -70,7 +70,7 @@ salvar_em_relogios.short_description = "Salvar selecionados em todos os relógio
 class ColaboradorAdmin(admin.ModelAdmin):
     search_fields = ('nome', 'pis', 'matriculas__numero')
     inlines = [MatriculaInline, ]    
-    list_display = ['nome', 'pis','verificar_digital','get_matriculas']
+    list_display = ['nome', 'get_link_batidas','pis','verificar_digital','get_matriculas']
     form = ColaboradorForm
     fieldsets = [
                  ('Informações básicas', {'fields':['nome', 'pis','verificar_digital',]}) ,
@@ -93,6 +93,12 @@ class ColaboradorAdmin(admin.ModelAdmin):
         
         return actions 
     
+    def get_link_batidas(self, obj):
+        return '<a href="{0}">Registros</a>'.format(reverse('batidas', args=(obj.id,)))
+    get_link_batidas.allow_tags = True
+    get_link_batidas.short_description = _('Batidas')
+    
+
     def get_matriculas(self, obj):
         matriculas =  (str(x['numero']) for x in obj.matriculas.values('numero'))
         return "\n".join(matriculas)

@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^exportar_para_relogio$', views.exportar_para_relogio, name='exportar_para_relogio' )  , 
     url(r'^salvar_colaborador$', views.salvar_colaboradores, name='salvar_colaboradores' )  , 
     url(r'^colaboradores$', views.colaboradores, name='colaboradores' )  , 
+    url(r'^batidas/(?P<colaborador_id>[0-9]+)/$', views.batidas, name='batidas' )  , 
+    url(r'^batidas/(?P<colaborador_id>[0-9]+)/(?P<year>[0-9]{4})/(?P<month>[0-9]+)/$', views.batidas, name='batidas' )  , 
     url(r'^syslogout$', views.site_logout, name='site_logout' )  ,
     url(r'^$', views.index, name='index' ) ,  
     

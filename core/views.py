@@ -8,13 +8,16 @@ from django.http.response import HttpResponse, HttpResponseForbidden,\
     HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.urls.base import reverse
-from core.models import Colaborador, Matricula, RelogioPonto
+from core.models import Colaborador, Matricula, RelogioPonto, RegistroPonto
 from pyRelogioPonto.relogioponto import util
 from django.utils.translation import ugettext_lazy as _
 from brazilnum.pis import validate_pis
 from django.views.generic.base import TemplateView
 from core.util import update_afd
 import json
+import settings
+import datetime
+import calendar
 
 
 
@@ -151,7 +154,39 @@ def exportar_para_relogio(request):
     else:
         return colaboradores(request) 
     
+def batidas(request, colaborador_id, year=None, month=None):
     
+    if year is None:
+        ano = datetime.datetime.now().year
+    else:
+        ano = int(year)
+    if month is None:
+        mes = datetime.datetime.now().month
+    else:
+        mes = int(month)
+    
+    data_hora_inicio = datetime.date(int(ano), int(mes), 1)
+    m , ultimo_dia_mes = calendar.monthrange(int(ano), int(mes))
+    data_hora_fim = datetime.date(int(ano), int(mes), ultimo_dia_mes)
+    
+    todos_registros = None
+    registros = None    
+    primeiro_ano = ano
+    
+    try:
+        todos_registros = RegistroPonto.objects.filter(colaborador__id=colaborador_id).order_by('data_hora')     
+        registros = todos_registros.filter(data_hora__range=(data_hora_inicio, data_hora_fim)).order_by('data_hora')                                                      
+        primeiro_ano = todos_registros[0].data_hora.year 
+        primeiro_mes = todos_registros[0].data_hora.month          
+        mes_atual = datetime.datetime.now().month 
+        ano_atual = datetime.datetime.now().year          
+
+    except:
+        pass                                  
+                                                              
+    meses = range(1, 13)
+    anos = range(datetime.datetime.now().year -5, datetime.datetime.now().year+1 )
+    return render(request, 'batidas.html', locals())
 
 class WelcomeAdminView(TemplateView):
     template_name = 'admin/index.html'
@@ -164,3 +199,4 @@ class WelcomeAdminView(TemplateView):
         colaborador_model = type(Colaborador)
         return admin_site.index(request, extra_context=locals())
             
+

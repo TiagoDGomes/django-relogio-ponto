@@ -14,29 +14,23 @@
 {% block breadcrumbs %}{% endblock  %}
 {% block content %}
 	<div id="container" class="main container">	
-
-			<div class="form-principal">
+		<div class="form-principal">
 			<div class="panel-body">
-					{% if mensagem %}
-						<div id="info-save" class="alert alert-{{ mensagem_tipo|default:'success' }}">
-						  {{ mensagem }}
-						</div>
-						<script>
-						function hideAlert(){$('#info-save').fadeOut('slow');}
-						setTimeout(hideAlert, 5000);
-						</script>
-					{% endif %}
-					{% block conteudo %}
-					
-					{% endblock conteudo %} 				
-					
-			</div>
-
-		</div>
-
-
-	</div>
+			
+				{% if mensagem %}
+					<div id="info-save" class="alert alert-{{ mensagem_tipo|default:'success' }}">
+					  {{ mensagem }}
+					</div>
+					<script>
+					function hideAlert(){$('#info-save').fadeOut('slow');}
+					setTimeout(hideAlert, 5000);
+					</script>
+				{% endif %}
+				{% block conteudo %}					
+				{% endblock conteudo %} 
+				
+			</div><!-- end .panel-body  -->
+		</div><!-- end .form-principal  -->
+	</div><!-- end .main.container  -->	
 	
-</body>
-</html>
 {% endblock  %}

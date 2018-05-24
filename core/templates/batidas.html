@@ -1,0 +1,65 @@
+{% extends 'base.html' %}{% load navigate_query %}
+{% block breadcrumbs %}<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Início</a>
+ &rsaquo; <a href="{% url 'admin:core_colaborador_changelist' %}">Colaboradores</a>
+ &rsaquo; Registros de {{ todos_registros.0.colaborador.nome }}
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+<style>
+@media print{
+  .nav-tabs{display: none}
+}
+</style>
+  <ul class="nav nav-tabs">
+  {% for a in anos %}    
+  {% for m in meses %}
+    {%if primeiro_ano <= a %}  
+    {%if primeiro_ano != a or primeiro_mes <= m %}  
+    {%if mes_atual >= m or ano_atual != a %}  
+    <li class="{% if ano == a and mes == m %}active{%endif%}">
+    <a href="{% url 'batidas' colaborador_id a m %}">
+    {{ a }} / {{ m }}</a>
+    </li>
+   
+    {% endif %}
+    {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% endfor %}
+  
+  </ul>
+  
+  <div class="tab-content">
+  <div id="home" class="tab-pane fade in active container">
+    <h3>{{ todos_registros.0.colaborador.nome }} - {{ registros.0.data_hora|date:"E/Y" }}	</h3>
+  
+    <table>	  
+    <tr>  
+  {% for registro in registros %}
+		{% with registros|next_item:forloop.counter0 as next_item %} 
+		{% with registros|prev_item:forloop.counter0 as prev_item %} 
+		{% if prev_item.data_hora.day != registro.data_hora.day %}<tr>{% endif %}
+		{% if prev_item.data_hora.day != registro.data_hora.day %} <th>Dia {{ registro.data_hora|date:"d" }}</th> {% endif %} 
+			<td>			
+			{{ registro.data_hora|date:"H:i" }}			
+			</td>
+		{% if next_item.data_hora.day != registro.data_hora.day %}</tr>{% endif %}
+		{% endwith %}
+		{% endwith %}
+  {% endfor %} 	
+    
+    </table>
+    <br>
+  
+<p>Relatório para simples conferência.</p>
+   
+  </div>
+   
+  </div>
+
+  
+
+{% endblock conteudo %}

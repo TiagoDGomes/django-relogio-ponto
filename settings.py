@@ -24,6 +24,7 @@ DATABASES = {
 
 TIME_ZONE = config('TIME_ZONE', default='America/Sao_Paulo')
 SECRET_KEY = config('SECRET_KEY', )
+ANO_INICIAL = config('ANO_INICIAL', default=2007, cast=int )
 EMAIL_HOST = config('EMAIL_HOST', default='')
 EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
@@ -75,7 +76,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'navigate_query': 'core.templatetags',
+            }
         },
+        
     },
 ]
 
