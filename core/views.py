@@ -16,6 +16,22 @@ from django.views.generic.base import TemplateView
 from core.util import update_afd
 import json
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+
+def handler404(request):
+    response = render_to_response('404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+
+def handler500(request):
+    response = render_to_response('500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
 
 
 def site_logout(request):
@@ -46,11 +62,14 @@ def gerar_arquivo(request):
     form = GerarArquivoForm(request.POST)
     if form.is_valid():   
         dados = form.gerar()
+        
         if not dados:
             return HttpResponseRedirect(reverse('admin:index') + '?nr=1' )  
-        else:   
-            response = HttpResponse(dados, content_type='application/force-download')
+        else:                                      
+            response = HttpResponse(dados, content_type='application/octet-stream')
             response['Content-Disposition'] = 'attachment; filename="%s.txt"' % form.nome_arquivo
+
+            
     else:
         response = HttpResponseForbidden(_('Requisição inválida.'))
     return response
@@ -64,7 +83,7 @@ def recuperar_batidas(request):
     else:
         force=False
     
-    for relogio_reg in RelogioPonto.objects.filter(ativo__isnull=False):
+    for relogio_reg in RelogioPonto.objects.filter(ativo=True):
         try:
             r = relogio_reg.atualizar_registros(force=force)
         except Exception as e:

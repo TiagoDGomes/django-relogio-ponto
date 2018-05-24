@@ -100,11 +100,11 @@ class ColaboradorAdmin(admin.ModelAdmin):
     get_matriculas.short_description = _('matrículas')
     
     
-    def save_related(self, request, form, formsets, change):
+    '''def save_related(self, request, form, formsets, change):
         admin.ModelAdmin.save_related(self, request, form, formsets, change)
         relogios_a_salvar = form.cleaned_data['salvar_em_relogios'].all()
         form.instance.salvar_em_relogios(relogios_a_salvar)
-        
+    '''    
 
 admin_site.register(Colaborador, ColaboradorAdmin)
 admin_site.register(RelogioPonto, RelogioPontoAdmin)
